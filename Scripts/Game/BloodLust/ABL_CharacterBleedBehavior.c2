@@ -1,0 +1,68 @@
+modded class BL_CharacterBleedBehavior
+{
+
+	
+	
+	array<ECM_AnimatedDecal> storedAnimatedDecals;
+	
+	
+	
+	// shit. Redo everything
+	
+	
+	
+	
+	
+	
+	// we need timeslice... 
+	override void OnFrame()
+	{
+		super.OnFrame();
+		
+		
+		// animation stuff. 
+		
+		//where's timeslice? 
+		if (singleFrameLifetime > lastTime)
+		{
+			//deletes current decal and replace it with another 
+			
+		}
+	
+	}
+	
+	
+	
+	private void TryCreateAnimatedBleedSplatter()
+	{
+		// TODO: make bleed originate from hit positions, and not the character origin.
+		vector intersectionPosition;
+		auto groundTraceParam = BL_Utilities.GetSurfaceIntersection(m_owner, m_world, m_owner.GetOrigin() + Vector(0, 1, 0),
+				Vector(Math.RandomFloat(-1, 1), -1, Math.RandomFloat(-1, 1)),
+				BL_Constants.GROUND_SPLATTER_INTERSECTION_DISTANCE,
+				intersectionPosition
+			);
+		
+			if (groundTraceParam.TraceEnt)
+			{
+				ECM_AnimatedDecal entity = ECM_AnimatedDecal.Cast(api.CreateEntity("ECM_AnimatedDecalsManager", "", api.GetCurrentEntityLayerId(), null, vector.Zero, vector.Zero));
+				entity.m_Frames = new array<ResourceName>();
+
+				for(int i = offset; i < numberOfFrames; i++)
+				{
+					Print(i);
+					ResourceName tempMat = Workbench.GetResourceName(materialsFolder + "/" + i.ToString() + ".emat");
+					entity.m_Frames.Insert(tempMat);
+		
+				}
+				storedAnimatedDecals.Insert(new ECM_AnimatedDecal(null, this, groundTraceParam.TraceEnt, m_owner.GetOrigin() + Vector(0, BL_Constants.DECAL_FAR_PLANE / 4, 0), 0, BL_Constants.DECAL_FAR_PLANE, Math.RandomFloat(0, 360) * Math.DEG2RAD,
+					Math.RandomFloat(MIN_DECAL_SIZE, MAX_DECAL_SIZE),
+					1,
+					GetRandomDropletMaterialPath(),
+					BL_Constants.DECAL_LIFETIME_SECS,
+					BL_Utilities.CalculateBloodColorFromDamage(m_bloodHitZone.GetHealthScaled() * 100)));
+			
+			}
+		}
+
+}
