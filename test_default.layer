@@ -1,15 +1,22 @@
+DecalEntity {
+ coords 21.748 0.971 4.759
+ angleX -88.767
+ angleY -174.039
+ angleZ 174.02
+ Mat "{C2189FD50E20EBBA}test3/54.emat"
+}
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {
  {
-  coords 16.104 1.001 12.719
+  coords 18.289 1.001 13.853
  }
  {
   coords 26.279 1.001 14.971
  }
  {
-  coords 19.505 1.001 12.23
+  coords 19.591 1.001 14.276
  }
  {
-  coords 22.06 1.001 8.882
+  coords 27.389 1.001 15.252
  }
  {
   coords 13.899 1.001 10.124
@@ -21,7 +28,7 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
   coords 15.843 1.001 7.298
  }
  {
-  coords 19.969 1.001 8.033
+  coords 26.443 1.001 16.405
  }
  {
   coords 22.271 1.001 3.172
@@ -34,5 +41,31 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
  }
  {
   coords 18.084 1.001 2.483
+ }
+ {
+  coords 21.796 1.035 14.313
+ }
+ {
+  coords 23.379 1.035 14.163
+ }
+ {
+  coords 20.883 1.273 14.429
+ }
+ {
+  coords 22.466 1.273 14.279
+ }
+}
+$grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn_E_03_Wall_01.et" {
+ {
+  coords 18.844 1.001 13.007
+ }
+ {
+  coords 26.44 1.001 16.091
+ }
+ {
+  coords 21.136 1.001 2.612
+ }
+ {
+  coords 22.25 1.001 13.055
  }
 }

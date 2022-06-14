@@ -1,0 +1,13 @@
+MatPBRDecal {
+BCRMap "{AA049BEA3F47C9E1}test3/bloodani_C/tile048.edds"
+OpacityMap "{062AEABE68D167CE}test3/bloodani_O/tile048.edds"
+NMOMap "{2F47895B3DA47A2B}test3/bloodani_N/tile048.edds"
+Color 0.136 0 0 1
+SpecularMul 2
+RoughnessScale 0.02
+MetalnessScale 0
+AOScale 0
+NormalPower 1.7
+BlendMode AlphaBlend
+AlphaTest 0.6
+}
