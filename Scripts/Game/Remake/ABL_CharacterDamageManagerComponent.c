@@ -31,7 +31,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 			
-		ABL_AnimatedDecalManager tempManager = ABL_AnimatedDecalManager.Cast(GetGame().FindEntity("DecalManager"));		//todo move this away
+		ABL_AnimatedDecalManager tempManager;		//todo move this away
+		tempManager = ABL_AnimatedDecalManager.GetInstance();
+
+		if (!tempManager)
+			tempManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
 
 		
 		if ( hitTransform[0].Length() != 0)

@@ -15,7 +15,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 	//3) should be spawned at runtime, maybe first char that spawns actualy spawn this. So for now let's just usemake it really stupid and get the entity from the world
 	
 
-	ABL_AnimatedDecalManager instance;
+	static ABL_AnimatedDecalManager instance;
 	
 	
 	private World m_world;
@@ -23,7 +23,18 @@ class ABL_AnimatedDecalManager : GenericEntity
 	const float WAIT_TIME = 0.2;		//500 ms
 	float currentTime;
 
+	
+	
+	
+	
+	
+	static ABL_AnimatedDecalManager GetInstance()
+	{
+		return instance;
+	}
 
+	
+	
 	void ABL_AnimatedDecalManager(IEntitySource src, IEntity parent)
 	{
 
@@ -70,7 +81,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 		"{CEEDE21ECCE4B0E8}test3/materials/63.emat"});
 		
 		
-		
+		instance = this;
 		
 		
 	}
