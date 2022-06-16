@@ -1,7 +1,7 @@
 MatPBRDecal {
-BCRMap "{C5633AC6C06CA7AD}test3/bloodani_C/tile013.edds"
-OpacityMap "{694D4B9297FA0982}test3/bloodani_O/tile013.edds"
-NMOMap "{40202877C28F1467}test3/bloodani_N/tile013.edds"
+BCRMap "test3/bloodani_C/tile013.edds"
+OpacityMap "test3/bloodani_O/tile013.edds"
+NMOMap "test3/bloodani_N/tile013.edds"
 Color 0.136 0 0 1
 SpecularMul 2
 RoughnessScale 0.02

@@ -1,9 +1,22 @@
-DecalEntity {
- coords 21.748 0.971 4.759
- angleX -88.767
- angleY -174.039
- angleZ 174.02
- Mat "{C2189FD50E20EBBA}test3/54.emat"
+ABL_AnimatedDecalManager {
+ coords 26.973 1.001 21.527
+}
+$grp DecalEntity {
+ {
+  coords 21.748 0.971 4.759
+  angleX -88.767
+  angleY -174.039
+  angleZ 174.02
+  Mat "{C2189FD50E20EBBA}test3/54.emat"
+ }
+ {
+  coords 25.4 2.504 16.189
+  angleX 26.059
+  angleY 179.54
+  angleZ -1.067
+  TerrainOnly 0
+  Mat "{CEEDE21ECCE4B0E8}test3/materials/63.emat"
+ }
 }
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {
  {

@@ -1,0 +1,14 @@
+MatPBRDecal {
+BCRMap "bloodpool/color/t_puddle_05_diffuse_SubUV_48.edds"
+OpacityMap "bloodpool/alpha/t_puddle_05_alpha_SubUV_48.edds"
+NMOMap "bloodpool/normalmap/t_puddle_05_normal_SubUV_48.edds"
+Color 0.136 0 0 1
+SpecularMul 2
+RoughnessScale 0.02
+MetalnessScale 0
+AOScale 0
+NormalPower 1.7
+BlendMode AlphaBlend
+AlphaTest 0
+AlphaMul 3
+}

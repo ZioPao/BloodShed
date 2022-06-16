@@ -3,6 +3,18 @@ GameProject {
  GUID "59951797A291CA02"
  TITLE "Animated Bloodlust"
  Dependencies {
-  "598D67DA950927F2" "59664C0CB36501CD" "58D0FB3206B6F859"
+  "598D67DA950927F2" 
+ }
+ Configurations {
+  GameProjectConfig PC {
+  }
+  GameProjectConfig XBOX_ONE {
+  }
+  GameProjectConfig XBOX_SERIES {
+  }
+  GameProjectConfig PS4 {
+  }
+  GameProjectConfig HEADLESS {
+  }
  }
 }
