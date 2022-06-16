@@ -12,7 +12,12 @@ $grp DecalEntity {
   angleY 179.54
   angleZ -1.067
   TerrainOnly 0
-  Mat "{CEEDE21ECCE4B0E8}test3/materials/63.emat"
+  Mat "{CEEDE21ECCE4B0E8}materials/wall_splatter/materials/63.emat"
+ }
+ {
+  coords 20.525 1.031 19.696
+  angleX -87.064
+  Mat "{987B2169C0695AAE}materials/bloodpool/49.emat"
  }
 }
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {

@@ -41,7 +41,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 		SetEventMask(EntityEvent.INIT | EntityEvent.FRAME);
 		SetFlags(EntityFlags.ACTIVE, true);
 		
-		
+		 Math.Randomize(-1);
 		
 		Print("ADM: Starting up ADM");
 		decalsSpawned = new map<int, ref DecalInformation>();
@@ -60,21 +60,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 			"{552322149A683C75}materials/bloodpool/44.emat","{A12B658C97B55401}materials/bloodpool/45.emat","{FFC34CCF2838DA0E}materials/bloodpool/46.emat","{0BCB0B5725E5B27A}materials/bloodpool/47.emat",
 			"{6C7366F1CDB432DA}materials/bloodpool/48.emat","{987B2169C0695AAE}materials/bloodpool/49.emat"});
 		
-
-		animationMaterials.Insert(EDecalType.GENERIC_SPLATTER, {"{9BF28FFBA19F287D}materials/wall_splatter/0.emat","{1FFD03D5B7529B65}materials/wall_splatter/1.emat","{3112E12013CFCE06}materials/wall_splatter/2.emat",
-			"{C51AA6B81E12A672}materials/wall_splatter/3.emat","{8CC2B3A76CD4D218}materials/wall_splatter/4.emat","{78CAF43F6109BA6C}materials/wall_splatter/5.emat","{2622DD7CDE843463}materials/wall_splatter/6.emat","{D22A9AE4D3595C17}materials/wall_splatter/7.emat",
-			"{B592F7423B08DCB7}materials/wall_splatter/8.emat","{419AB0DA36D5B4C3}materials/wall_splatter/9.emat","{350AC655A18B59FB}materials/wall_splatter/10.emat","{C10281CDAC56318F}materials/wall_splatter/11.emat","{9FEAA88E13DBBF80}materials/wall_splatter/12.emat",
-			"{6BE2EF161E06D7F4}materials/wall_splatter/13.emat","{223AFA096CC0A39E}materials/wall_splatter/14.emat","{D632BD91611DCBEA}materials/wall_splatter/15.emat","{88DA94D2DE9045E5}materials/wall_splatter/16.emat","{7CD2D34AD34D2D91}materials/wall_splatter/17.emat",
-			"{1B6ABEEC3B1CAD31}materials/wall_splatter/18.emat","{EF62F97436C1C545}materials/wall_splatter/19.emat","{3FAF9618179BAA7C}materials/wall_splatter/20.emat","{CBA7D1801A46C208}materials/wall_splatter/21.emat","{954FF8C3A5CB4C07}materials/wall_splatter/22.emat",
-			"{6147BF5BA8162473}materials/wall_splatter/23.emat","{289FAA44DAD05019}materials/wall_splatter/24.emat","{DC97EDDCD70D386D}materials/wall_splatter/25.emat","{827FC49F6880B662}materials/wall_splatter/26.emat","{76778307655DDE16}materials/wall_splatter/27.emat",
-			"{11CFEEA18D0C5EB6}materials/wall_splatter/28.emat","{E5C7A93980D136C2}materials/wall_splatter/29.emat","{F8630685E2CDE970}materials/wall_splatter/30.emat","{0C6B411DEF108104}materials/wall_splatter/31.emat","{5283685E509D0F0B}materials/wall_splatter/32.emat",
-			"{A68B2FC65D40677F}materials/wall_splatter/33.emat","{EF533AD92F861315}materials/wall_splatter/34.emat","{1B5B7D41225B7B61}materials/wall_splatter/35.emat","{45B354029DD6F56E}materials/wall_splatter/36.emat","{B1BB139A900B9D1A}materials/wall_splatter/37.emat",
-			"{D6037E3C785A1DBA}materials/wall_splatter/38.emat","{220B39A4758775CE}materials/wall_splatter/39.emat","{2AE536837BBA4D72}materials/wall_splatter/40.emat","{DEED711B76672506}materials/wall_splatter/41.emat","{80055858C9EAAB09}materials/wall_splatter/42.emat",
-			"{740D1FC0C437C37D}materials/wall_splatter/43.emat","{3DD50ADFB6F1B717}materials/wall_splatter/44.emat","{C9DD4D47BB2CDF63}materials/wall_splatter/45.emat","{9735640404A1516C}materials/wall_splatter/46.emat","{633D239C097C3918}materials/wall_splatter/47.emat",
-			"{04854E3AE12DB9B8}materials/wall_splatter/48.emat","{F08D09A2ECF0D1CC}materials/wall_splatter/49.emat","{ED29A61E8EEC0E7E}materials/wall_splatter/50.emat","{1921E1868331660A}materials/wall_splatter/51.emat","{47C9C8C53CBCE805}materials/wall_splatter/52.emat",
-			"{B3C18F5D31618071}materials/wall_splatter/53.emat","{FA199A4243A7F41B}materials/wall_splatter/54.emat","{0E11DDDA4E7A9C6F}materials/wall_splatter/55.emat","{50F9F499F1F71260}materials/wall_splatter/56.emat","{A4F1B301FC2A7A14}materials/wall_splatter/57.emat",
-			"{C349DEA7147BFAB4}materials/wall_splatter/58.emat","{3741993F19A692C0}materials/wall_splatter/59.emat","{E78CF65338FCFDF9}materials/wall_splatter/60.emat","{1384B1CB3521958D}materials/wall_splatter/61.emat","{4D6C98888AAC1B82}materials/wall_splatter/62.emat",
-			"{B964DF10877173F6}materials/wall_splatter/63.emat"});
+		animationMaterials.Insert(EDecalType.GENERIC_SPLATTER, {"{00F6BBB6682F552B}materials/wall_splatter/000.emat","{F4FEFC2E65F23D5F}materials/wall_splatter/001.emat","{AA16D56DDA7FB350}materials/wall_splatter/002.emat","{5E1E92F5D7A2DB24}materials/wall_splatter/003.emat","{17C687EAA564AF4E}materials/wall_splatter/004.emat","{E3CEC072A8B9C73A}materials/wall_splatter/005.emat","{BD26E93117344935}materials/wall_splatter/006.emat","{492EAEA91AE92141}materials/wall_splatter/007.emat","{2E96C30FF2B8A1E1}materials/wall_splatter/008.emat","{DA9E8497FF65C995}materials/wall_splatter/009.emat","{C73A2B2B9D791627}materials/wall_splatter/010.emat","{33326CB390A47E53}materials/wall_splatter/011.emat","{6DDA45F02F29F05C}materials/wall_splatter/012.emat","{99D2026822F49828}materials/wall_splatter/013.emat","{D00A17775032EC42}materials/wall_splatter/014.emat","{240250EF5DEF8436}materials/wall_splatter/015.emat","{7AEA79ACE2620A39}materials/wall_splatter/016.emat","{8EE23E34EFBF624D}materials/wall_splatter/017.emat","{E95A539207EEE2ED}materials/wall_splatter/018.emat","{1D52140A0A338A99}materials/wall_splatter/019.emat","{CD9F7B662B69E5A0}materials/wall_splatter/020.emat","{39973CFE26B48DD4}materials/wall_splatter/021.emat","{677F15BD993903DB}materials/wall_splatter/022.emat","{9377522594E46BAF}materials/wall_splatter/023.emat","{DAAF473AE6221FC5}materials/wall_splatter/024.emat","{2EA700A2EBFF77B1}materials/wall_splatter/025.emat","{704F29E15472F9BE}materials/wall_splatter/026.emat","{84476E7959AF91CA}materials/wall_splatter/027.emat","{E3FF03DFB1FE116A}materials/wall_splatter/028.emat","{17F74447BC23791E}materials/wall_splatter/029.emat","{0A53EBFBDE3FA6AC}materials/wall_splatter/030.emat","{FE5BAC63D3E2CED8}materials/wall_splatter/031.emat","{A0B385206C6F40D7}materials/wall_splatter/032.emat","{54BBC2B861B228A3}materials/wall_splatter/033.emat","{1D63D7A713745CC9}materials/wall_splatter/034.emat","{E96B903F1EA934BD}materials/wall_splatter/035.emat","{B783B97CA124BAB2}materials/wall_splatter/036.emat","{438BFEE4ACF9D2C6}materials/wall_splatter/037.emat","{2433934244A85266}materials/wall_splatter/038.emat","{D03BD4DA49753A12}materials/wall_splatter/039.emat","{D8D5DBFD474802AE}materials/wall_splatter/040.emat","{2CDD9C654A956ADA}materials/wall_splatter/041.emat","{7235B526F518E4D5}materials/wall_splatter/042.emat","{863DF2BEF8C58CA1}materials/wall_splatter/043.emat","{CFE5E7A18A03F8CB}materials/wall_splatter/044.emat","{3BEDA03987DE90BF}materials/wall_splatter/045.emat","{6505897A38531EB0}materials/wall_splatter/046.emat","{910DCEE2358E76C4}materials/wall_splatter/047.emat","{F6B5A344DDDFF664}materials/wall_splatter/048.emat","{02BDE4DCD0029E10}materials/wall_splatter/049.emat","{1F194B60B21E41A2}materials/wall_splatter/050.emat","{EB110CF8BFC329D6}materials/wall_splatter/051.emat","{B5F925BB004EA7D9}materials/wall_splatter/052.emat","{41F162230D93CFAD}materials/wall_splatter/053.emat","{0829773C7F55BBC7}materials/wall_splatter/054.emat","{FC2130A47288D3B3}materials/wall_splatter/055.emat","{A2C919E7CD055DBC}materials/wall_splatter/056.emat","{56C15E7FC0D835C8}materials/wall_splatter/057.emat","{317933D92889B568}materials/wall_splatter/058.emat","{C57174412554DD1C}materials/wall_splatter/059.emat","{15BC1B2D040EB225}materials/wall_splatter/060.emat","{E1B45CB509D3DA51}materials/wall_splatter/061.emat","{BF5C75F6B65E545E}materials/wall_splatter/062.emat","{4B54326EBB833C2A}materials/wall_splatter/063.emat"});
 		
 		
 		instance = this;
@@ -86,13 +72,6 @@ class ABL_AnimatedDecalManager : GenericEntity
 	{
 		super.EOnInit(owner);
 		//Allocate it whenever called. When called, let's start. 
-
-		
-		
-		
-		
-		
-
 		m_world = GetGame().GetWorld();
 		materialColor = Color.FromRGBA(128, 0, 0,255).PackToInt();		//move this away
 	}
@@ -115,53 +94,45 @@ class ABL_AnimatedDecalManager : GenericEntity
 				currentTime = 0;
 
 			}
-
-		
 		}
 		else
 			return;
-		
-		
-		
-		
-		
-		//Print("Do something come on");
-		//if (decalsSpawned.Count() > 0 && currentTime)
-	//	{
-	//		SpawnAnimatedFrames();
-	//	}
-	//	else 
-	//		return;
+
 	}
 	
 	
 	
 	//void SetupNewAnimation(int index, Decal dec, int frames, float rot, vector orig, vector proj, int si)
-	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly)
+	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly, float sizeModifier, float angleModifier, int nodeId)
 	{
-		
-		
-		//TEMP FIX! 
-		
-		
-		
-		
-		
-		
-		//Print("Shot " + character);
 		vector intersectionPosition;
 		float distance = 2.0;
 		TraceParam traceParam;
 		vector origin;
 		vector projection;
 		array<ResourceName> tempFrames = animationMaterials.Get(type);
-
+		
+	
 		if (terrainOnly)
 		{
 			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, intersectionPosition);
-			origin = character.GetOrigin() + Vector(0, 2.0 / 4, 0);
-		 	projection = vector.Lerp(-traceParam.TraceNorm, hitDirection, 0.5);
-		
+			
+			//TEST differnet origin 
+			vector mat[4];
+
+			if (type == EDecalType.BLOODPOOL && character.GetBoneMatrix(nodeId, mat))
+			{
+				vector pos = character.CoordToParent(mat[3]);
+				origin = pos;
+				projection = -traceParam.TraceNorm;
+			}
+			else
+			{
+				origin = character.GetOrigin() + Vector(0, 2.0 / 4, 0);			
+		 		projection = vector.Lerp(-traceParam.TraceNorm, hitDirection, 0.5);
+
+			}
+
 		}
 		else
 		{
@@ -186,31 +157,25 @@ class ABL_AnimatedDecalManager : GenericEntity
 			projection = {xProjection, yProjection, zProjection};
 		
 		}
-
+		
 		if (traceParam.TraceEnt) // spawn splatter below character
-		{
-						
-			float size = Math.RandomFloat(1.0, 2.0);
-			Print(size);
-			Decal tmpDecal = m_world.CreateDecal(
-				traceParam.TraceEnt,
-				origin, projection,
-				0,
-				2.0,
-				Math.DEG2RAD,   //Math.RandomFloat(0, 360) * Math.DEG2RAD,
-				size,
-				1,
-				tempFrames[0],
-				-1,
-				materialColor);
+		{			
+			float size = Math.RandomFloatInclusive(1.0, 1.0 + sizeModifier);		//Doesn't seem random.... 
+			float angle = Math.RandomFloatInclusive(-angleModifier, angleModifier) * Math.DEG2RAD;
 			
-						
-			int index = decalsSpawned.Count();
-			DecalInformation tmpDecalInformation = new DecalInformation(tmpDecal, type, 1, traceParam, hitPosition, hitDirection, origin, projection, size, Math.DEG2RAD, terrainOnly); 
-			decalsSpawned.Insert(index, tmpDecalInformation);
+			Decal tmpDecal = m_world.CreateDecal(traceParam.TraceEnt, origin, projection, 0, distance, angle, size, 1, tempFrames[0], -1, materialColor);
 			
-			//GetGame().GetCallqueue().CallLater(SpawnAnimatedFrames, WAIT_TIME, true);
-	
+			
+			// try to insert it into the decalsSpawned map 
+			
+			int index = Math.RandomInt(-10000, 10000);
+			
+			while(decalsSpawned.Get(index))
+				index = Math.RandomInt(-10000, 10000);
+			
+			
+			DecalInformation tmpDecalInformation = new DecalInformation(tmpDecal, type, 1, traceParam, hitPosition, hitDirection, origin, projection, size, angle, terrainOnly); 
+			decalsSpawned.Insert(index, tmpDecalInformation);	
 		}
 
 	}
@@ -218,15 +183,21 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 	void SpawnAnimatedFrames()
 	{
-		
 		float distance = 2.0;
 
 		foreach(int index, DecalInformation dInfo : decalsSpawned)
 		{
-			
 			Decal d = dInfo.decal;
 			int currentFrame = dInfo.currentFrame;
 			array<ResourceName> tempFrames = animationMaterials.Get(dInfo.type);
+			
+			
+			// DEBUG 
+			
+			//Print("Index: " + index);
+			//Print("Current Frame: " + currentFrame);
+			//Print("_______________");
+			
 			
 			if (currentFrame < tempFrames.Count())
 			{
@@ -236,10 +207,8 @@ class ABL_AnimatedDecalManager : GenericEntity
 				TraceParam traceParam = dInfo.traceParam;
 				
 				if (traceParam.TraceEnt) // spawn splatter below character
-				{	
-
-					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dInfo.originPosition, dInfo.projectionDirection, 
-							0, 2.0, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
+				{
+					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dInfo.originPosition, dInfo.projectionDirection, 0, 2.0, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
 					
 					currentFrame++;
 					dInfo.decal = newDecal;
@@ -265,11 +234,6 @@ class ABL_AnimatedDecalManager : GenericEntity
   		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
   		param.Exclude = owner;
 		float intersectionDistance = world.TraceMove(param, NULL) * distance;
-		
-		if (!intersectionDistance)
-			Print("STOP!");
-		
-		
 		intersectionPosition = origin + (direction * intersectionDistance);
 		return param;
 	}
@@ -282,7 +246,6 @@ class ABL_AnimatedDecalManager : GenericEntity
 
 class DecalInformation
 {
-	//IEntity character;
 	Decal decal; 
 	EDecalType type;
 	int currentFrame;
@@ -300,7 +263,6 @@ class DecalInformation
 	
 	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, bool to)
 	{
-		//character = c;
 		decal = d;
 		type = t;
 		currentFrame = cf;

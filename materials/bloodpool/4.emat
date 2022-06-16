@@ -4,11 +4,11 @@ OpacityMap "materials/bloodpool/alpha/t_puddle_05_alpha_SubUV_4.edds"
 NMOMap "materials/bloodpool/normalmap/t_puddle_05_normal_SubUV_4.edds"
 Color 0.136 0 0 1
 SpecularMul 2
-RoughnessScale 0.02
+RoughnessScale 0.028
 MetalnessScale 0
 AOScale 0
 NormalPower 1.7
 BlendMode AlphaBlend
 AlphaTest 0
-AlphaMul 3
+AlphaMul 1.85
 }

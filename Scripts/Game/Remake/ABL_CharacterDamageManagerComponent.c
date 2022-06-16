@@ -34,6 +34,30 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		ABL_AnimatedDecalManager tempManager;		//todo move this away
 		tempManager = ABL_AnimatedDecalManager.GetInstance();
 
+		
+		
+		array<string> boneNames = new array<string>();
+		ownerChar.GetBoneNames(boneNames);
+		
+		
+		
+		//we've got the local node id, we need the external one though. So.
+		
+		vector testVec[4];
+		vector test1[4];
+		
+		int correctBoneIndex
+		int correctNodeId;
+		
+		
+		//TNodeId idTmp = ownerChar.GetBoneIndex(boneNames[4]);
+		//ownerChar.GetBoneMatrix(idTmp, testVec);
+		
+		int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
+
+		pHitZone.TryGetColliderDescription(ownerChar, colliderDescriptorIndex, test1, correctBoneIndex, correctNodeId);
+		
+		
 		if (!tempManager)
 			tempManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
 
@@ -44,13 +68,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
 				Print("Start blood");
-				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 600, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true);
+				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 2.0, 1.0, correctNodeId);
 	
 				//tempManager.StartNewAnimation(ownerChar, hitTransform[0],  hitTransform[1], EDecalType.BLOODPOOL, true);
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
-				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false);
+				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, 20.0, correctNodeId);
 
 		
 		}
