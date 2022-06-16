@@ -8,19 +8,8 @@ class ABL_AnimatedDecalManager : GenericEntity
 {
 	
 	ref map<EDecalType, array<ResourceName>> animationMaterials;
+	ref map<int, DecalInformation> decalsSpawned;
 
-
-	ref map<int, Decal> decalsSpawned;
-	ref map<int, EDecalType> decalTypes;
-	ref map<int, int> decalsFramesOfAnimation;
-	ref map<int, float> decalsRotation;
-	ref map<int, vector> hitPositions;
-	ref map<int, vector> hitDirections;
-	ref map<int, vector> originPosition;
-	ref map<int, vector> projectionMap;
-	ref map<int, float> sizeMap;
-
-		
 	// 1) must be initialized one time 
 	// 2) each char will relate to this.
 	//3) should be spawned at runtime, maybe first char that spawns actualy spawn this. So for now let's just usemake it really stupid and get the entity from the world
@@ -41,40 +30,12 @@ class ABL_AnimatedDecalManager : GenericEntity
 		
 	}
 
-	
-	/*
-	ABL_AnimatedDecalManager GetInstance()
-	{
-		if (instance)
-		return instance;
-	}
-	*/
-	
-	
-	
-	
-	
-
 	override void EOnInit(IEntity owner) //!EntityEvent.INIT
 	{
 		super.EOnInit(owner);
 		//Allocate it whenever called. When called, let's start. 
 		Print("ADM: Starting up ADM");
-		decalsSpawned = new map<int, Decal>();
-		decalsFramesOfAnimation = new map<int, int>();
-		decalsRotation = new map<int, float>();
-		originPosition = new map<int, vector>();
-		
-		hitPositions = new map<int, vector>();
-		hitDirections = new map<int, vector>();
-
-		
-		
-		projectionMap = new map<int, vector>();
-		sizeMap = new map<int, float>();
-		decalTypes = new map<int, EDecalType>();
-		
-		
+		decalsSpawned = new map<int, DecalInformation>();
 		
 		animationMaterials = new map<EDecalType, array<ResourceName>>();
 		animationMaterials.Insert(EDecalType.BLOODPOOL, {"{B1934F7967DAD951}bloodpool/materials/1.emat", "{459B08E16A07B125}bloodpool/materials/0.emat","{B1934F7967DAD951}bloodpool/materials/1.emat","{EF7B663AD857575E}bloodpool/materials/2.emat",
@@ -136,25 +97,16 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 	
 	//void SetupNewAnimation(int index, Decal dec, int frames, float rot, vector orig, vector proj, int si)
-	void SetupNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly)
+	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly)
 	{
 		
 		vector intersectionPosition;
 		float distance = 2.0;
-		
 		TraceParam traceParam;
 		vector origin;
 		vector projection;
-		
-		
-		
 		array<ResourceName> tempFrames = animationMaterials.Get(type);
-		
-		
-		
-		
-		
-		
+
 		if (terrainOnly)
 		{
 			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, intersectionPosition);
@@ -205,61 +157,60 @@ class ABL_AnimatedDecalManager : GenericEntity
 			
 						
 			int index = decalsSpawned.Count();
-			
-			
-			
-			hitPositions.Set(index, hitPosition);
-			hitDirections.Set(index, hitDirection);
-			
-			originPosition.Set(index,  origin);
-			projectionMap.Set(index, projection);
-			decalsSpawned.Set(index, tmpDecal);
-			sizeMap.Set(index, size);
-			decalsFramesOfAnimation.Set(index, 1);		
-			
+			DecalInformation tmpDecalInformation = DecalInformation(character, tmpDecal, type, 1,  hitPosition, hitDirection, origin, projection, size, Math.DEG2RAD); 
+			decalsSpawned.Insert(index, tmpDecalInformation);
+	
 		}
 
 	}
 	
-	void SpawnAnimatedFrame(IEntity character, EDecalType type, bool terrainOnly)
+	
+	void SpawnAnimatedFrame(IEntity character, bool terrainOnly)
 	{
-		foreach(int index, Decal d : decalsSpawned)
+		
+		float distance = 2.0;
+
+		foreach(int index, DecalInformation dInfo : decalsSpawned)
 		{
-			int frameIndex = decalsFramesOfAnimation.Get(index);
-			array<ResourceName> tempFrames = animationMaterials.Get(type);
+			
+			Decal d = dInfo.decal;
+			int currentFrame = dInfo.currentFrame;
+		
 			
 			
-			if (frameIndex < tempFrames.Count())
+			
+			//int frameIndex = decalsFramesOfAnimation.Get(index);
+			array<ResourceName> tempFrames = animationMaterials.Get(dInfo.type);
+			
+			if (currentFrame < tempFrames.Count())
 			{
 				if (d)
 					m_world.RemoveDecal(d);
 					
 				vector intersectionPosition;
-				float distance = 2.0;
-				
 				TraceParam traceParam;
 		
 				if (terrainOnly)
-					traceParam = GetSurfaceIntersection(character, m_world, hitPositions.Get(index), Vector(0, -1, 0), distance, intersectionPosition);
+					traceParam = GetSurfaceIntersection(dInfo.character, m_world, dInfo.hitPosition, Vector(0, -1, 0), distance, intersectionPosition);
 				else
-					traceParam = GetSurfaceIntersection(character, m_world, hitPositions.Get(index), hitDirections.Get(index), distance, intersectionPosition);
+					traceParam = GetSurfaceIntersection(dInfo.character, m_world, dInfo.hitPosition, dInfo.hitDirection, distance, intersectionPosition);
 				
 				
 				if (traceParam.TraceEnt) // spawn splatter below character
 				{	
-					vector origin = originPosition.Get(index);
-					vector projection = projectionMap.Get(index);
-					float size = sizeMap.Get(index);
-					decalsSpawned.Set(index, m_world.CreateDecal(traceParam.TraceEnt, origin, projection, 
-							0, 2.0, Math.DEG2RAD, size, 1, tempFrames[frameIndex], -1, materialColor));
-					frameIndex++;
-					decalsFramesOfAnimation.Set(index, frameIndex);
+
+					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dInfo.originPosition, dInfo.projectionDirection, 
+							0, 2.0, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
+					
+					currentFrame++;
+					
+					dInfo.decal = newDecal;
+					dInfo.currentFrame = currentFrame;
+					decalsSpawned.Set(index, dInfo);		//reset it... not sure if it's needed tbh
 				}	
 			}
 			else
 			{
-				// todo add cleaning for everything
-				decalsFramesOfAnimation.Remove(index);
 				decalsSpawned.Remove(index);
 				GetGame().GetCallqueue().Remove(SpawnAnimatedFrame);
 			}
@@ -268,8 +219,6 @@ class ABL_AnimatedDecalManager : GenericEntity
 	}
 	
 	// Helpers 
-	
-
 	private TraceParam GetSurfaceIntersection(IEntity owner,World world,vector origin,vector direction, float distance, out vector intersectionPosition)
 	{
 		auto param = new TraceParam();
@@ -277,9 +226,7 @@ class ABL_AnimatedDecalManager : GenericEntity
   		param.End = origin + direction * distance;
   		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
   		param.Exclude = owner;
-		//Print("Done in GetSurfaceIntersection, going to make TraceMove");
 		float intersectionDistance = world.TraceMove(param, NULL) * distance;
-		//Print("Tracemove done, making stupid thing and then return");
 		
 		if (!intersectionDistance)
 			Print("STOP!");
@@ -293,6 +240,37 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 }
 
+
+
+class DecalInformation
+{
+	IEntity character;
+	Decal decal; 
+	EDecalType type;
+	int currentFrame;
+	vector hitPosition;
+	vector hitDirection;
+	vector originPosition;
+	vector projectionDirection;
+	
+	float size;
+	float rotation;
+	
+	
+	void DecalInformation(IEntity c, Decal d, EDecalType t, int cf, vector hp, vector hd, vector op, vector pd, float s, float r)
+	{
+		character = c;
+		decal = d;
+		type = t;
+		currentFrame = cf;
+		hitPosition = hp;
+		hitDirection = hd;
+		originPosition = op;
+		projectionDirection = pd;
+		size = s;
+		rotation = r;
+	}
+}
 
 enum EDecalType
 {

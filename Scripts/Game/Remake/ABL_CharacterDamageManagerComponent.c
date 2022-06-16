@@ -8,7 +8,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 	
 	
-	
+	IEntity ownerChar;
 	
 	
 	// INVOKERS 
@@ -22,11 +22,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	override void OnInit(IEntity owner)
 	{
 		super.OnInit(owner);
-
+		ownerChar = owner;
 		auto world = owner.GetWorld();
 
-		m_splatterBehavior = new ABL_Main;
-		m_splatterBehavior.OnInit(owner, world, this);
+		//m_splatterBehavior = new ABL_Main;
+		//m_splatterBehavior.OnInit(owner, world, this);
 
 		//m_bleedBehavior = new BL_CharacterBleedBehavior;
 		//m_bleedBehavior.OnInit(owner, world, this);
@@ -45,9 +45,17 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 
-		if (damage >= 20.0)
+		if (damage >= 10.0)
 		{
-			m_splatterBehavior.OnDamage(GetState(), damage, hitTransform);
+			
+			ABL_AnimatedDecalManager tempManager = ABL_AnimatedDecalManager.Cast(GetGame().FindEntity("DecalManager"));
+			vector hitPosition = hitTransform[0];
+			vector hitDirection = hitTransform[1];
+			tempManager.StartNewAnimation(ownerChar, hitPosition, hitDirection, EDecalType.BLOODPOOL, true);
+			
+			//	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly)
+
+			//m_splatterBehavior.OnDamage(GetState(), damage, hitTransform);
 			
 			// SCR_CharacterDamageManagerComponent
 			

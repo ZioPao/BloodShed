@@ -1,4 +1,4 @@
-ABL_AnimatedDecalManager {
+ABL_AnimatedDecalManager DecalManager {
  coords 26.973 1.001 21.527
 }
 $grp DecalEntity {
