@@ -7,8 +7,8 @@ class ABL_AnimatedDecalManagerClass : GenericEntityClass
 class ABL_AnimatedDecalManager : GenericEntity
 {
 	
-	ref map<EDecalType, array<ResourceName>> animationMaterials;
-	ref map<int, DecalInformation> decalsSpawned;
+	ref map<EDecalType, ref array<ResourceName>> animationMaterials;
+	ref map<int, ref DecalInformation> decalsSpawned;
 
 	// 1) must be initialized one time 
 	// 2) each char will relate to this.
@@ -20,6 +20,8 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 	private World m_world;
 	int materialColor;	//todo make this dynamic 
+	const float WAIT_TIME = 0.2;		//500 ms
+	float currentTime;
 
 
 	void ABL_AnimatedDecalManager(IEntitySource src, IEntity parent)
@@ -28,17 +30,13 @@ class ABL_AnimatedDecalManager : GenericEntity
 		SetEventMask(EntityEvent.INIT | EntityEvent.FRAME);
 		SetFlags(EntityFlags.ACTIVE, true);
 		
-	}
-
-	override void EOnInit(IEntity owner) //!EntityEvent.INIT
-	{
-		super.EOnInit(owner);
-		//Allocate it whenever called. When called, let's start. 
-		Print("ADM: Starting up ADM");
-		decalsSpawned = new map<int, DecalInformation>();
 		
-		animationMaterials = new map<EDecalType, array<ResourceName>>();
-		animationMaterials.Insert(EDecalType.BLOODPOOL, {"{B1934F7967DAD951}bloodpool/materials/1.emat", "{459B08E16A07B125}bloodpool/materials/0.emat","{B1934F7967DAD951}bloodpool/materials/1.emat","{EF7B663AD857575E}bloodpool/materials/2.emat",
+		
+		Print("ADM: Starting up ADM");
+		decalsSpawned = new map<int, ref DecalInformation>();
+		
+		animationMaterials = new map<EDecalType, ref array<ResourceName>>();
+		animationMaterials.Insert(EDecalType.BLOODPOOL, {"{B1934F7967DAD951}bloodpool/materials/1.emat", "{B1934F7967DAD951}bloodpool/materials/1.emat","{EF7B663AD857575E}bloodpool/materials/2.emat",
 		"{1B7321A2D58A3F2A}bloodpool/materials/3.emat","{52AB34BDA74C4B40}bloodpool/materials/4.emat","{A6A37325AA912334}bloodpool/materials/5.emat","{F84B5A66151CAD3B}bloodpool/materials/6.emat",
 		"{0C431DFE18C1C54F}bloodpool/materials/7.emat","{6BFB7058F09045EF}bloodpool/materials/8.emat","{9FF337C0FD4D2D9B}bloodpool/materials/9.emat","{48FB2AAC7FBE89B1}bloodpool/materials/10.emat",
 		"{BCF36D347263E1C5}bloodpool/materials/11.emat","{E21B4477CDEE6FCA}bloodpool/materials/12.emat","{161303EFC03307BE}bloodpool/materials/13.emat","{5FCB16F0B2F573D4}bloodpool/materials/14.emat",
@@ -75,6 +73,16 @@ class ABL_AnimatedDecalManager : GenericEntity
 		
 		
 		
+	}
+
+	override void EOnInit(IEntity owner) //!EntityEvent.INIT
+	{
+		super.EOnInit(owner);
+		//Allocate it whenever called. When called, let's start. 
+
+		
+		
+		
 		
 		
 
@@ -86,12 +94,37 @@ class ABL_AnimatedDecalManager : GenericEntity
 	override void EOnFrame(IEntity owner, float timeSlice) //!EntityEvent.FRAME
 	{
 		//Print("ADM: Running");
+		
+		GetGame().GetCallqueue().Tick(timeSlice);		//Maybe?
+		
+		
 		if (decalsSpawned.Count() > 0)
 		{
-			Print("Decals to animate");
+			currentTime += timeSlice;
+			
+			if (currentTime > WAIT_TIME)
+			{
+				SpawnAnimatedFrames();
+				currentTime = 0;
+
+			}
+
+		
 		}
-		else 
+		else
 			return;
+		
+		
+		
+		
+		
+		//Print("Do something come on");
+		//if (decalsSpawned.Count() > 0 && currentTime)
+	//	{
+	//		SpawnAnimatedFrames();
+	//	}
+	//	else 
+	//		return;
 	}
 	
 	
@@ -100,6 +133,15 @@ class ABL_AnimatedDecalManager : GenericEntity
 	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly)
 	{
 		
+		
+		//TEMP FIX! 
+		
+		
+		
+		
+		
+		
+		//Print("Shot " + character);
 		vector intersectionPosition;
 		float distance = 2.0;
 		TraceParam traceParam;
@@ -157,15 +199,17 @@ class ABL_AnimatedDecalManager : GenericEntity
 			
 						
 			int index = decalsSpawned.Count();
-			DecalInformation tmpDecalInformation = DecalInformation(character, tmpDecal, type, 1,  hitPosition, hitDirection, origin, projection, size, Math.DEG2RAD); 
+			DecalInformation tmpDecalInformation = new DecalInformation(tmpDecal, type, 1, traceParam, hitPosition, hitDirection, origin, projection, size, Math.DEG2RAD, terrainOnly); 
 			decalsSpawned.Insert(index, tmpDecalInformation);
+			
+			//GetGame().GetCallqueue().CallLater(SpawnAnimatedFrames, WAIT_TIME, true);
 	
 		}
 
 	}
 	
 	
-	void SpawnAnimatedFrame(IEntity character, bool terrainOnly)
+	void SpawnAnimatedFrames()
 	{
 		
 		float distance = 2.0;
@@ -175,11 +219,6 @@ class ABL_AnimatedDecalManager : GenericEntity
 			
 			Decal d = dInfo.decal;
 			int currentFrame = dInfo.currentFrame;
-		
-			
-			
-			
-			//int frameIndex = decalsFramesOfAnimation.Get(index);
 			array<ResourceName> tempFrames = animationMaterials.Get(dInfo.type);
 			
 			if (currentFrame < tempFrames.Count())
@@ -187,14 +226,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 				if (d)
 					m_world.RemoveDecal(d);
 					
-				vector intersectionPosition;
-				TraceParam traceParam;
-		
-				if (terrainOnly)
-					traceParam = GetSurfaceIntersection(dInfo.character, m_world, dInfo.hitPosition, Vector(0, -1, 0), distance, intersectionPosition);
-				else
-					traceParam = GetSurfaceIntersection(dInfo.character, m_world, dInfo.hitPosition, dInfo.hitDirection, distance, intersectionPosition);
-				
+				TraceParam traceParam = dInfo.traceParam;
 				
 				if (traceParam.TraceEnt) // spawn splatter below character
 				{	
@@ -203,7 +235,6 @@ class ABL_AnimatedDecalManager : GenericEntity
 							0, 2.0, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
 					
 					currentFrame++;
-					
 					dInfo.decal = newDecal;
 					dInfo.currentFrame = currentFrame;
 					decalsSpawned.Set(index, dInfo);		//reset it... not sure if it's needed tbh
@@ -212,7 +243,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 			else
 			{
 				decalsSpawned.Remove(index);
-				GetGame().GetCallqueue().Remove(SpawnAnimatedFrame);
+				GetGame().GetCallqueue().Remove(SpawnAnimatedFrames);
 			}
 			
 		}
@@ -244,10 +275,12 @@ class ABL_AnimatedDecalManager : GenericEntity
 
 class DecalInformation
 {
-	IEntity character;
+	//IEntity character;
 	Decal decal; 
 	EDecalType type;
 	int currentFrame;
+	
+	ref TraceParam traceParam;
 	vector hitPosition;
 	vector hitDirection;
 	vector originPosition;
@@ -256,19 +289,22 @@ class DecalInformation
 	float size;
 	float rotation;
 	
+	bool terrainOnly;
 	
-	void DecalInformation(IEntity c, Decal d, EDecalType t, int cf, vector hp, vector hd, vector op, vector pd, float s, float r)
+	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, bool to)
 	{
-		character = c;
+		//character = c;
 		decal = d;
 		type = t;
 		currentFrame = cf;
+		traceParam = tp;
 		hitPosition = hp;
 		hitDirection = hd;
 		originPosition = op;
 		projectionDirection = pd;
 		size = s;
 		rotation = r;
+		terrainOnly = to;
 	}
 }
 
