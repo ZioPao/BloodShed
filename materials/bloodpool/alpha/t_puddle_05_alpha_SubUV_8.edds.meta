@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{2E591732DEA99F47}bloodpool/alpha/t_puddle_05_alpha_SubUV_8.edds"
+ Name "{9B94A5BFD47EF7EA}materials/bloodpool/alpha/t_puddle_05_alpha_SubUV_8.edds"
  Configurations {
   PNGResourceClass PC : "{DC555BD399D92412}Configs/System/ResourceTypes/PC/TextureUnspecified.conf" {
   }

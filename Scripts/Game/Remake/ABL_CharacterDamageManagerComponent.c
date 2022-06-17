@@ -68,13 +68,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
 				Print("Start blood");
-				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 2.0, 1.0, correctNodeId);
+				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
 	
 				//tempManager.StartNewAnimation(ownerChar, hitTransform[0],  hitTransform[1], EDecalType.BLOODPOOL, true);
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
-				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, 20.0, correctNodeId);
+				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
 
 		
 		}
