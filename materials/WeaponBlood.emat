@@ -1,0 +1,26 @@
+MatPBRDecal {
+ Color 0.152 0.014 0.014 1
+ SpecularMul 1.268
+ AlphaTest 1.606
+ AlphaMul 2.377
+ BlendMode AlphaBlend
+ RoughnessScale 0
+ MetalnessScale 0
+ AOScale 0.282
+ DielectricReflectance 0.038
+ BCRMap "{6A0FF8478CC74767}materials/weapon_splatter/bcr.edds"
+ OpacityMap "{BD54250F429186FD}materials/weapon_splatter/alpha.edds"
+ NormalPower 0.564
+ NMOMap "{52D743D555B015F9}materials/weapon_splatter/nmo.edds"
+ GlobalMapsUVTransform MatUVTransform "{59A8FCE7962618BE}" {
+  TilingU 10
+  TilingV 10
+  OffsetU 0.007
+  Rotation 13
+ }
+ GBufferNormal 1
+ NormalCombinePower 1.62
+ ParallaxScale 0.088
+ ParallaxMidlePlane 0.222
+ ParallaxShadowScale 0.01
+}

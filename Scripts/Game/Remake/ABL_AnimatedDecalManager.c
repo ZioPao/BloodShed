@@ -28,6 +28,15 @@ class ABL_AnimatedDecalManager : GenericEntity
 	ref map<string, string> ablSettings;
 
 	
+	
+	
+	
+	const float nearClip = 0.0;
+	const float farClip = 5;
+	
+	
+	
+	
 	ref map<string, string> waitBetweenFrames
 	
 	
@@ -46,7 +55,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 		
 		 Math.Randomize(-1);
 		
-		Print("ADM: Starting up ADM");
+		//Print("ADM: Starting up ADM");
 		decalsSpawned = new map<int, ref DecalInformation>();
 		animationMaterials = new map<EDecalType, ref array<ResourceName>>();
 		
@@ -56,6 +65,9 @@ class ABL_AnimatedDecalManager : GenericEntity
 		
 		
 		instance = this;
+		
+		
+		//Print(ProceduralTexture.GenerateAlphaTexture());
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//Settings initialization stuff 
@@ -192,9 +204,9 @@ class ABL_AnimatedDecalManager : GenericEntity
 			
 			//Math.RandomFloatInclusive(-angleModifier, angleModifier) * Math.DEG2RAD;
 			
-			Decal tmpDecal = m_world.CreateDecal(traceParam.TraceEnt, origin, projection, 0, distance, angle, size, 1, tempFrames[0], -1, materialColor);
+			Decal tmpDecal = m_world.CreateDecal(traceParam.TraceEnt, origin, projection, nearClip, farClip, angle, size, 1, tempFrames[0], -1, materialColor);
 			
-			
+
 			// try to insert it into the decalsSpawned map 
 			
 			int index = Math.RandomInt(-10000, 10000);
@@ -203,7 +215,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 				index = Math.RandomInt(-10000, 10000);
 			
 			
-			DecalInformation tmpDecalInformation = new DecalInformation(tmpDecal, type, 1, traceParam, hitPosition, hitDirection, origin, projection, size, angle, terrainOnly); 
+			DecalInformation tmpDecalInformation = new DecalInformation(tmpDecal, type, 1, traceParam, hitPosition, hitDirection, origin, projection, size, angle, Math.RandomFloatInclusive(1, 1.3), terrainOnly); 
 			decalsSpawned.Insert(index, tmpDecalInformation);	
 		}
 
@@ -237,7 +249,22 @@ class ABL_AnimatedDecalManager : GenericEntity
 				
 				if (traceParam.TraceEnt) // spawn splatter below character
 				{
-					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dInfo.originPosition, dInfo.projectionDirection, 0, 2.0, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
+					
+					
+					Material tmp = Material.GetOrLoadMaterial(tempFrames[currentFrame], 0);
+					//tmp.SetParam("AlphaMul", 1.25);
+					
+					float modifiedAlpha = dInfo.currentAlpha + Math.RandomFloat(0.0001, 0.03);
+					
+					
+					tmp.SetParam("AlphaMul", modifiedAlpha);
+					
+					dInfo.currentAlpha = modifiedAlpha; 
+					//Print(modifiedAlpha);
+					
+					tmp.SetParam("GBufferNormal", 1);
+					tmp.SetParam("NormalCombinePower",1.3 + Math.RandomFloat(-0.1, 0.1));
+					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dInfo.originPosition, dInfo.projectionDirection, nearClip, farClip, dInfo.rotation, dInfo.size, 1, tempFrames[currentFrame], -1, materialColor);
 					
 					currentFrame++;
 					dInfo.decal = newDecal;
@@ -273,6 +300,89 @@ class ABL_AnimatedDecalManager : GenericEntity
 
 
 
+
+
+class ProceduralTexture
+{
+	//perlin? 
+	
+	
+	static array<float> GenerateAlphaTexture()
+	{
+		float t = Math.PerlinNoise(10);		//boh 
+		
+		float height = 256;
+		float width = 256;
+		
+		
+		//array test[256][256] = new array[256][256]();
+		
+		
+		
+		
+		
+		array<float> matrix = new array<float>();
+		
+		//fuck it
+		
+		//array<array> matrix = new array<array>();
+		//
+		//array<float> row = new array<float>();
+		
+		
+		//not sure if its doable
+		
+		for (int i = 0; i < width * height; i++)
+		{
+			float nx;
+			float perlin = Math.PerlinNoise(Math.RandomFloat(-100,100));
+		
+			matrix.Insert(perlin);
+			
+			//matrix.Insert(new array<float>());
+			//row.Clear();		//reset
+			
+			//matrix.Set(y, new array<float>());
+			
+			
+			
+			//for (int x = 0; x < width; x++)
+			//{
+		  //		float nx = Math.RandomFloat(-100,100);
+		//		float perlin = Math.PerlinNoise(nx);
+			//	
+			//	matrix.Get(y).Insert(perlin);
+				//row.Insert(perlin);// = Math.PerlinNoise(nx);
+		
+		//	}
+			
+		
+		
+			//matrix.Insert(row);
+		
+		}
+		
+		return matrix;
+
+		
+		/*
+		
+		//array<vector>> values = new array<vector>(); 
+		// jesus, a loop 
+		for (int y = 0; y < height; y++) 
+		{
+ 			 for (int x = 0; x < width; x++) 
+			{      
+    			float nx = x/width - 0.5, ny = y/height - 0.5;
+    			test[y][x] =  Math.PerlinNoise(nx);
+ 			}
+		}
+		*/
+	
+	}
+
+}
+
 class DecalInformation
 {
 	Decal decal; 
@@ -287,10 +397,11 @@ class DecalInformation
 	
 	float size;
 	float rotation;
+	float currentAlpha;
 	
 	bool terrainOnly;
 	
-	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, bool to)
+	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, float ca, bool to)
 	{
 		decal = d;
 		type = t;
@@ -302,6 +413,7 @@ class DecalInformation
 		projectionDirection = pd;
 		size = s;
 		rotation = r;
+		currentAlpha = ca;
 		terrainOnly = to;
 	}
 }

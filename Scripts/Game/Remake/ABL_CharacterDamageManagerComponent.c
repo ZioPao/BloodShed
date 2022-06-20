@@ -4,12 +4,20 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	IEntity ownerChar;
 	bool alreadyDestroyed = false;
 
+	
+	
+	static Decal previousPlayerWeaponDecal;
+	ref SCR_Stack<DecalWrapper> currentCharacterDecals;
+	//Decal currentWeaponDecal;
 
 	override void OnInit(IEntity owner)
 	{
 		super.OnInit(owner);
 		ownerChar = owner;
 		auto world = owner.GetWorld();
+		
+		
+		currentCharacterDecals = new ref SCR_Stack<DecalWrapper>();
 
 		//m_splatterBehavior = new ABL_Main;
 		//m_splatterBehavior.OnInit(owner, world, this);
@@ -67,7 +75,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
-				Print("Start blood");
+				//Print("Start blood");
 				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
 	
 				//tempManager.StartNewAnimation(ownerChar, hitTransform[0],  hitTransform[1], EDecalType.BLOODPOOL, true);
@@ -75,8 +83,67 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			}
 			else if (damage > 20.0)
 				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
+			
+			
+			
+			//SPAWN SINGLE DECAL ON SPECIFIC POINT
+		//	m_world.CreateDecal()
 
-		
+			ResourceName tempMaterial = "{098960A4823D679F}materials/WeaponBlood.emat";
+			int materialColor = Color.FromRGBA(16, 0, 0,255).PackToInt();		//move this away
+			World tempWorld = GetGame().GetWorld();
+			
+			
+			
+			PlayerManager pMan = GetGame().GetPlayerManager();
+			SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+			vector originPlayer[4];
+			IEntity currentPlayer;
+			
+			currentPlayer = m_playerController.GetMainEntity();
+			currentPlayer.GetTransform(originPlayer);
+			
+			
+			
+			if (currentCharacterDecals.Count() > 2)
+			{
+				Print("Popping older decals");
+				DecalWrapper tmpCurrentCharDecalWrapper = currentCharacterDecals.Pop();
+				Decal tmpCurrentCharDecal = tmpCurrentCharDecalWrapper.wrappedDecal;
+				if (tmpCurrentCharDecal)
+				{
+					tempWorld.RemoveDecal(tmpCurrentCharDecal);
+				
+				}
+			}
+			
+			DecalWrapper tmpWrapper = DecalWrapper(tempWorld.CreateDecal(ownerChar, hitTransform[0], hitTransform[0], 0, 2, 0, 1, 1, tempMaterial, -1, materialColor));
+			currentCharacterDecals.Push(tmpWrapper);
+
+			
+			if (currentPlayer ==  ownerChar)
+			{
+				if (previousPlayerWeaponDecal)
+				{
+					Print("Removing previous decal on player weapon");
+					tempWorld.RemoveDecal(previousPlayerWeaponDecal);
+
+				}
+
+
+			}
+
+			previousPlayerWeaponDecal = tempWorld.CreateDecal(m_playerController.GetMainEntity(), hitTransform[0], originPlayer[0], 0, 2, 0, 1, 1, tempMaterial, -1, materialColor);
+
+			
+			
+			
+			
+			
+			
+			
+			//this should be cleaned to prevent the decals bug.
+
 		}
 		
 		
@@ -93,5 +160,19 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 
 	
+
+}
+
+
+class DecalWrapper
+{
+	Decal wrappedDecal;
+	
+	
+	void DecalWrapper(Decal d)
+	{
+		wrappedDecal = d;
+	
+	}
 
 }

@@ -7,20 +7,25 @@ $grp DecalEntity {
   Mat "{C2189FD50E20EBBA}test3/54.emat"
  }
  {
-  coords 25.324 0.945 20.845
-  angleX -84.439
-  angleY -90.847
-  angleZ 79.03
+  coords 26.477 3.583 16.473
+  angleY -180
+  angleZ -90
+  scale 3.9
+  FarPlane 0.433
   TerrainOnly 0
-  Mat "{987B2169C0695AAE}materials/bloodpool/49.emat"
+  NearestOnly 1
+  Mat "{6C7068F1B7E5F1EB}materials/bloodpool/49Test.emat"
  }
  {
-  coords 23.473 1.43 18.314
-  angleX 82.57
-  angleY 113.159
-  angleZ -66.666
+  coords 23.639 1.968 18.802
+  angleX 15.211
+  angleY 164.331
+  angleZ 80.571
+  scale 0.1
+  FarPlane 2.146
+  Stretch 16.267
   TerrainOnly 0
-  Mat "{987B2169C0695AAE}materials/bloodpool/49.emat"
+  Mat "{098960A4823D679F}materials/WeaponBlood.emat"
  }
 }
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {
@@ -72,13 +77,34 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
  {
   coords 22.466 1.273 14.279
  }
+ {
+  components {
+   SCR_CharacterDamageManagerComponent "{55872AD7B4E959F2}" {
+    "Additional hit zones" {
+     ScriptedHitZone Health {
+      MaxHealth 1582.3
+     }
+     SCR_CharacterBloodHitZone Blood {
+      MaxHealth 7515.6
+     }
+     SCR_CharacterHeadHitZone Head {
+      MaxHealth 3222.7
+     }
+    }
+   }
+  }
+  coords 19.194 1.001 17.971
+ }
+}
+SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
+ coords 13.876 1.001 16.335
 }
 GenericEntity : "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et" {
  coords 23.723 1.356 18.235
 }
 $grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn_E_03_Wall_01.et" {
  {
-  coords 18.844 1.001 13.007
+  coords 18.844 -1.46 13.007
  }
  {
   coords 26.44 1.001 16.091
@@ -87,6 +113,6 @@ $grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn
   coords 21.136 1.001 2.612
  }
  {
-  coords 22.25 1.001 13.055
+  coords 22.25 -0.565 13.055
  }
 }
