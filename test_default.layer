@@ -7,8 +7,9 @@ $grp DecalEntity {
   Mat "{C2189FD50E20EBBA}test3/54.emat"
  }
  {
-  coords 26.477 3.583 16.473
-  angleY -180
+  coords 14.91 2.457 16.271
+  angleX -2.872
+  angleY 180
   angleZ -90
   scale 3.9
   FarPlane 0.433
@@ -17,12 +18,12 @@ $grp DecalEntity {
   Mat "{6C7068F1B7E5F1EB}materials/bloodpool/49Test.emat"
  }
  {
-  coords 23.117 1.055 20.357
-  angleX -48.263
-  angleY -17.943
-  angleZ -85.981
+  coords 23.957 1.278 18.41
+  angleX -51.531
+  angleY 70.061
+  angleZ -173.383
   TerrainOnly 0
-  Mat "{6C7068F1B7E5F1EB}materials/bloodpool/49Test.emat"
+  Mat "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat"
  }
 }
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {

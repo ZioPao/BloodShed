@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

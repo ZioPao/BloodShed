@@ -75,7 +75,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
 
 			// Manages splatters on weapons 
-			ResourceName tempMaterial = "{098960A4823D679F}materials/WeaponBlood.emat";
 			PlayerManager pMan = GetGame().GetPlayerManager();
 			SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 			IEntity currentPlayer = m_playerController.GetMainEntity();
@@ -87,15 +86,15 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			vector originChar = ownerChar.GetOrigin();
 			
 			//reset it
-			if (vector.Distance(playerTransform[3], originChar) < 100)
+			if (vector.Distance(playerTransform[3], originChar) < 5)
 			{
-				//Print("Test");
+				Print("Test");
 				float farClipPlayerWeaponDecal = vector.Distance(playerTransform[3], originChar);
 				
 				//Print(testVec);
 				//Print(originPlayer);
 				vector normal = playerTransform[0];		//1st one is the normal I guess?
-				ManageDecalStack(currentPlayerDecals, currentPlayer, hitTransform[0], -hitTransform[1], 3, 6, false);
+				ManageDecalStack(currentPlayerDecals, currentPlayer, hitTransform[0], -hitTransform[1], 1, 6, true);
 			}
 		}
 	}
@@ -109,12 +108,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 		vector projection;
 		ABL_AnimatedDecalManager.GetSurfaceIntersection(owner, worldTmp, orig, direct, 5, TraceFlags.ENTS, projection);
-		
+		ResourceName tempMaterial = "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat";
+
 		
 		
 		if (shouldPop)
 		{
-			if (stack.Count() > maxDecals)
+			if (stack.Count() >= maxDecals)
 			{
 				DecalWrapper tmpWrapper = stack.Pop();
 				Decal tmpDecal = tmpWrapper.wrappedDecal;
@@ -127,7 +127,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		if (stack.Count() < maxDecals)
 		{
 			Print("Creating splatter");
-			DecalWrapper newTmpWrapper = DecalWrapper(worldTmp.CreateDecal(owner, orig, projection, 0, farClip, 0, 1, 1, "{098960A4823D679F}materials/WeaponBlood.emat", -1, materialColor));
+			DecalWrapper newTmpWrapper = DecalWrapper(worldTmp.CreateDecal(owner, orig, projection, 0, farClip, 0, 1, 1, tempMaterial, -1, materialColor));
 			stack.Push(newTmpWrapper);
 		}
 
@@ -145,7 +145,12 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		//todo spherecast and get near decals.
 		//Print(previousPlayerWeaponDecal);
 		Print(currentPlayerDecals.Count());
-		for (int i = 0; i < currentPlayerDecals.Count(); i++)
+		
+		
+
+		int count = currentPlayerDecals.Count();
+		
+		for (int i = 0; i < count; i++)
 		{
 		
 			DecalWrapper decWrapper = currentPlayerDecals.Pop();
