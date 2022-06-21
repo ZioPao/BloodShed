@@ -3,6 +3,9 @@ class ABL_AnimatedDecalManagerClass : GenericEntityClass
 
 
 
+//todo implement weapon cleaning 
+
+
 
 class ABL_AnimatedDecalManager : GenericEntity
 {
@@ -153,7 +156,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 		if (terrainOnly)
 		{
-			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, intersectionPosition);
+			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance,TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
 			
 			//TEST differnet origin 
 			vector mat[4];
@@ -175,7 +178,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 		}
 		else
 		{
-			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, hitDirection, distance, intersectionPosition);
+			traceParam = GetSurfaceIntersection(character, m_world, hitPosition, hitDirection, distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
 			origin = intersectionPosition - hitDirection * (2.0 / 4);
 			
 			float xProjection;
@@ -254,13 +257,15 @@ class ABL_AnimatedDecalManager : GenericEntity
 					Material tmp = Material.GetOrLoadMaterial(tempFrames[currentFrame], 0);
 					//tmp.SetParam("AlphaMul", 1.25);
 					
-					float modifiedAlpha = dInfo.currentAlpha + Math.RandomFloat(0.0001, 0.03);
+					float modifiedAlphaMul = dInfo.currentAlphaMul + Math.RandomFloat(0.0001, 0.02);
+					//float modifiedAlphaTest = dInfo.currentAlpha + Math.RandomFloat(0.0001, 0.02);
+
 					
+					tmp.SetParam("AlphaMul", modifiedAlphaMul);
+					//tmpSetParam("AlphaTest", modifiedAlphaTest
 					
-					tmp.SetParam("AlphaMul", modifiedAlpha);
-					
-					dInfo.currentAlpha = modifiedAlpha; 
-					//Print(modifiedAlpha);
+					dInfo.currentAlphaMul = modifiedAlphaMul; 
+					//Print(modifiedAlphaMul);
 					
 					tmp.SetParam("GBufferNormal", 1);
 					tmp.SetParam("NormalCombinePower",1.3 + Math.RandomFloat(-0.1, 0.1));
@@ -282,12 +287,12 @@ class ABL_AnimatedDecalManager : GenericEntity
 	}
 	
 	// Helpers 
-	private TraceParam GetSurfaceIntersection(IEntity owner,World world,vector origin,vector direction, float distance, out vector intersectionPosition)
+	static  TraceParam GetSurfaceIntersection(IEntity owner,World world,vector origin,vector direction, float distance, int flags, out vector intersectionPosition)
 	{
 		auto param = new TraceParam();
   		param.Start = origin;
   		param.End = origin + direction * distance;
-  		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+  		param.Flags = flags;
   		param.Exclude = owner;
 		float intersectionDistance = world.TraceMove(param, NULL) * distance;
 		intersectionPosition = origin + (direction * intersectionDistance);
@@ -397,11 +402,11 @@ class DecalInformation
 	
 	float size;
 	float rotation;
-	float currentAlpha;
+	float currentAlphaMul;
 	
 	bool terrainOnly;
 	
-	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, float ca, bool to)
+	void DecalInformation( Decal d, EDecalType t, int cf, TraceParam tp, vector hp, vector hd, vector op, vector pd, float s, float r, float cam, bool to)
 	{
 		decal = d;
 		type = t;
@@ -413,7 +418,7 @@ class DecalInformation
 		projectionDirection = pd;
 		size = s;
 		rotation = r;
-		currentAlpha = ca;
+		currentAlphaMul = cam;
 		terrainOnly = to;
 	}
 }
@@ -422,4 +427,24 @@ enum EDecalType
 {
 	BLOODPOOL,
 	GENERIC_SPLATTER
+}
+
+
+
+
+
+//move this away 
+
+
+class CleaningAction 
+{
+
+	void SomeInitMethod()
+	{
+	}
+	
+	protected void YourDownCallback(float value, EActionTrigger trigger)
+	{
+	
+}
 }
