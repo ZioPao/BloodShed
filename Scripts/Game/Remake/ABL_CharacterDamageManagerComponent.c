@@ -37,7 +37,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
 		ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
 		ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
-		ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "5"));
+		ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
 		
 		
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
@@ -104,13 +104,16 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
 				//Print("Start blood");
+				
+				// we need to get the angle before he dies 
 				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
 				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
-
-			// Manages splatters on weapons 
+		
+			
+			/* WEAPON SPLATTERS */
 			PlayerManager pMan = GetGame().GetPlayerManager();
 			SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 			IEntity currentPlayer = m_playerController.GetMainEntity();
@@ -125,7 +128,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			vector originChar = ownerChar.GetOrigin();
 			float farClip = ablSettings.Get("farClip").ToFloat();
 
-			if (vector.Distance(playerTransform[3], originChar) < farClip)
+			if (vector.Distance(playerTransform[3], originChar) < 3)
 			{
 				//Print("Applying Decals on Player Weapon");
 				int maxDecalsPlayerWeapon = ablSettings.Get("maxDecalsPlayerWeapon").ToInt();

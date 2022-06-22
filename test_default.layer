@@ -71,7 +71,8 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
     }
    }
   }
-  coords 19.194 1.001 17.971
+  coords 19.083 1.001 18.07
+  angleY -3.59
  }
 }
 $grp SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
@@ -88,16 +89,20 @@ $grp SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character
   coords 12.836 1.001 16.155
  }
  {
-  coords 12.921 1.001 20.577
+  coords 14.433 1.001 23.11
+  angleY 126.259
  }
  {
-  coords 13.961 1.001 20.757
+  coords 16.003 1.001 23.66
+  angleY 62.893
  }
  {
   coords 15.353 1.001 20.668
+  angleY 36.531
  }
  {
   coords 11.529 1.001 20.666
+  angleY -131.316
  }
  {
   coords 5.653 1.001 16.131

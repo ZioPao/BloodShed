@@ -193,8 +193,43 @@ class ABL_AnimatedDecalManager : GenericEntity
 		if (traceParam.TraceEnt) // spawn splatter below character
 		{			
 			float size = Math.RandomFloatInclusive(1.0, 1.0 + sizeModifier);		//Doesn't seem random.... 
-			float angle = character.GetYawPitchRoll()[2];
+			float angle;
+			int randomNumber = Math.RandomIntInclusive(0,2);
+			Print(randomNumber);
+
+			//0, 20, 90 for now.... we need to fix the origin before doing anything else though
 			
+			
+			//randomNumber = 1;
+			
+			
+			switch(randomNumber)
+			{
+				case 0:
+				{
+					angle = 0;
+					break;
+				}
+				case 1:
+				{
+					angle = 90 * Math.DEG2RAD;
+					origin[0] = origin[0] + 0.4;
+					origin[2] = origin[2] - 0.4;
+					break;
+				}
+				case 2:
+				{
+					angle = 180 * Math.DEG2RAD;
+					origin[2] = origin[2] - 1;
+					break;
+				}
+
+			
+			}
+
+
+			
+			//Print(character.GetYawPitchRoll());
 			//Math.RandomFloatInclusive(-angleModifier, angleModifier) * Math.DEG2RAD;
 			
 			Decal tmpDecal = m_world.CreateDecal(traceParam.TraceEnt, origin, projection, nearClip, farClip, angle, size, 1, tempFrames[0], -1, materialColor);
