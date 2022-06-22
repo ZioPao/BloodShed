@@ -10,9 +10,11 @@ MatPBRDecal {
  DielectricReflectance 0.038
  BCRMap "{6A0FF8478CC74767}materials/weapon_splatter/bcr.edds"
  OpacityMap "{BD54250F429186FD}materials/weapon_splatter/alpha.edds"
- NormalPower 0.564
+ NormalPower 0.895
  NMOMap "{52D743D555B015F9}materials/weapon_splatter/nmo.edds"
  GlobalMapsUVTransform MatUVTransform "{59A8FCE7962618BE}" {
+  TilingU 10
+  TilingV 10
   OffsetU 0.007
   Rotation 13
  }

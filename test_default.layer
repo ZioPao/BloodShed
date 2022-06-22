@@ -1,20 +1,3 @@
-$grp DecalEntity {
- {
-  coords 21.748 0.971 4.759
-  angleX -88.767
-  angleY -174.039
-  angleZ 174.02
-  Mat "{C2189FD50E20EBBA}test3/54.emat"
- }
- {
-  coords 23.957 1.278 18.41
-  angleX -51.531
-  angleY 70.061
-  angleZ -173.383
-  TerrainOnly 0
-  Mat "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat"
- }
-}
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {
  {
   coords 18.289 1.001 13.853
@@ -85,9 +68,6 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
 }
 SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
  coords 13.876 1.001 16.335
-}
-GenericEntity : "{3E413771E1834D2F}Prefabs/Weapons/Rifles/M16/Rifle_M16A2.et" {
- coords 23.723 1.356 18.235
 }
 $grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn_E_03_Wall_01.et" {
  {

@@ -29,33 +29,31 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			currentPlayerDecals = new array<ref DecalWrapper>();
 		
 		worldTmp = GetGame().GetWorld();
-	////////////////////////////////////////////////////////////////////////////////////////////////
-			//Settings initialization stuff 
-			MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-	
-			OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		//Settings initialization stuff 
+		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
+		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 			
-			ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.1"));
-			ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
-			ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
-			ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
-			ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
-			ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "5"));
-			ablVariablesMap.Set("testProjY", new VariableInfo("Test Diff Test Proj", "0"));
+		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.1"));
+		ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
+		ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
+		ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
+		ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
+		ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
+		ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "5"));
+		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
 	
-			if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
-			{
-				ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
-			}
-			else if (!ablSettings)
-			{
-				ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
-				ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);
+		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
+			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
+		else if (!ablSettings)
+		{
+			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
+			ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);
 				
-			}
+		}
 			
 	
-			//////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		
 		dbgShapes = new array<ref Shape>();
@@ -107,8 +105,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			{
 				//Print("Start blood");
 				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
-	
-				//tempManager.StartNewAnimation(ownerChar, hitTransform[0],  hitTransform[1], EDecalType.BLOODPOOL, true);
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
@@ -125,29 +121,14 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			ManageDecalStack(currentCharacterDecals, ownerChar, hitTransform[0], hitTransform[1], 0, 2, MAX_DECALS_PER_CHAR);
 
 			vector originChar = ownerChar.GetOrigin();
-			
-			//reset it
-			if (vector.Distance(playerTransform[3], originChar) < 15)
-			{
-				float farClipPlayerWeaponDecal = vector.Distance(playerTransform[3], originChar);
-				
-				//Print(testVec);
-				//Print(originPlayer);
-				vector normal = playerTransform[0];		//1st one is the normal I guess?
-				Print("Applying Decals on Player Weapon");
-				
-				
-				float nearClip = ablSettings.Get("nearClip").ToFloat();
-				float farClip = ablSettings.Get("farClip").ToFloat();
+			float farClip = ablSettings.Get("farClip").ToFloat();
 
-				
-				
-				
-				ManageDecalStack(currentPlayerDecals, currentPlayer, hitTransform[0], hitTransform[1], nearClip, farClip,MAX_DECALS_PLAYER_WEAPON, true);
+			if (vector.Distance(playerTransform[3], originChar) < farClip)
+			{
+				//Print("Applying Decals on Player Weapon");
+				float nearClip = ablSettings.Get("nearClip").ToFloat();
+				ManageDecalStack(currentPlayerDecals, currentPlayer, hitTransform[0], hitTransform[1], nearClip, farClip,MAX_DECALS_PLAYER_WEAPON);
 				Print("________________________");
-				
-				
-				
 			}
 		}
 	}
@@ -155,18 +136,10 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 	
 	
-	void ManageDecalStack(array<ref DecalWrapper> stack, IEntity owner, vector hitPosition, vector hitDirection, float nearClip, float farClip, int maxDecals, bool doubleSpawn = false)
+	void ManageDecalStack(array<ref DecalWrapper> stack, IEntity owner, vector hitPosition, vector hitDirection, float nearClip, float farClip, int maxDecals)
 	{
 		int materialColor = Color.FromRGBA(16, 0, 0,255).PackToInt();		//move this away
-
-		//float distance = 3;
-		//if(maxDecals == 6)
-		//{
-	//		Print(hitPosition);
-	//	//	Print(hitDirection);
-	//	}
-			//Print("stop");
-			
+		
 		auto param = new TraceParam();
   		param.Start = hitPosition;
   		param.End = hitPosition + hitDirection * farClip;
@@ -175,49 +148,23 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		float intersectionDistance = worldTmp.TraceMove(param, NULL) * farClip;
 		vector intersectionPosition = hitPosition + (hitDirection * intersectionDistance);
 		
-		
 		//set dynamic stuff here 
 		ablSettings = MCF_SettingsManager.GetInstance().GetModSettings("59951797A291CA02");
 		float diffOriginX = ablSettings.Get("diffOriginX").ToFloat();
 		float diffOriginY = ablSettings.Get("diffOriginY").ToFloat();
 		float diffOriginZ = ablSettings.Get("diffOriginZ").ToFloat();
 		
-		vector origin = hitPosition;
-		
-		/*
-		if (origin[0] < 0)
-			origin[0] = origin[0] - diffOrigin;
-		else
-			origin[0] = origin[0] + diffOrigin;
+		float decalAngle = ablSettings.Get("decalAngle").ToFloat();
+		bool debugSpheres = ablSettings.Get("debugSpheres").ToInt();
 		
 		
-		if (origin[2] < 0)
-			origin[2] = origin[2] - diffOrigin;
-		else 
-			origin[2] = origin[2] +diffOrigin;
-		*/
 		
-		//origin[1] = origin[1] + 1;		//just set it higher ?
-		vector projection = - hitDirection;
+		float rotation = Math.RandomFloatInclusive(-decalAngle, decalAngle);
 
-		if (projection.Length() == 0)
-			projection = origin;
-		
-		
-		
-		projection = origin;		//tmp
-		
-		float rotation = Math.RandomFloatInclusive(-360, 360);
-		
-		//if (maxDecals == 6)
-		//	ABL_AnimatedDecalManager.GetSurfaceIntersection(owner, worldTmp, orig, direct, 5, TraceFlags.ENTS, projection);
-		ResourceName tempMaterial = "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat";
-
-		
-		
+		//ResourceName tempMaterial = "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat";
+		ResourceName tempMaterial = "{098960A4823D679F}materials/WeaponBlood.emat";
 		
 		int count = stack.Count();
-		//Print("Current count: " + count);
 		if (count >= maxDecals)
 		{
 			int index = Math.RandomIntInclusive(0, stack.Count() - 1);
@@ -229,133 +176,32 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				worldTmp.RemoveDecal(tmpDecal);
 				stack.Remove(index);
 			}
-			
-			if (doubleSpawn)
-			{
-				index = Math.RandomIntInclusive(0, stack.Count() - 1);
-				//Print("Removing another element " + index);
-				tmpWrapper = stack.Get(index);
-				tmpDecal = tmpWrapper.wrappedDecal;
-				if (tmpDecal)
-				{
-					worldTmp.RemoveDecal(tmpDecal);
-					stack.Remove(index);
-				}
-			}
-				
-	
+
 		}
 		
 		
 		count = stack.Count();
-		//Print("Count after removing " + count);
 		if (count < maxDecals)
 		{
-
-
-			// This works when he's on the ground squirming. 
-			
-			
-			//float testProjY = ablSettings.Get("testProjY").ToFloat();
-			
-			//vector testProj = owner.GetOrigin();
-			//testProj[1] = testProj[1] + 1;
-			
-			//if (maxDecals == MAX_DECALS_PLAYER_WEAPON)
-			//{
-			//	Print("Creating splatter");
-			//	Print(origin);
-		//		Print(projection);
-			//	//Print(testProj);
-				//Print("_____________");
-			//}
-			
-			
-			
-			//GetBoneMAtrix
-			
 			
 			vector leftHandTransform[4];
-			vector rightHandTransform[4];
 			int nodeLeftHand = 2089750091;
-			int nodeRightHand = 2889608574;
-			
-			
 			owner.GetBoneMatrix(nodeLeftHand, leftHandTransform);
-			owner.GetBoneMatrix(nodeRightHand, rightHandTransform);
-			
-			
+
 			
 			vector tmpTransformHand = leftHandTransform[3];
-			//if (tmpOrigin[0] < 0)
-			//	tmpOrigin[0] = tmpOrigin[0] - diffOriginX;
-			//else 
 			tmpTransformHand[0] = tmpTransformHand[0] + diffOriginX;
-
-			//if (tmpOrigin[1] < 0)
-			//	tmpOrigin[1] = tmpOrigin[1] - diffOriginY;
-			//else 
 			tmpTransformHand[1] = tmpTransformHand[1] + diffOriginY;
-			
-			//if (tmpOrigin[2] < 0)
-			//	tmpOrigin[2] = tmpOrigin[2] - diffOriginZ;
-			//else 
 			tmpTransformHand[2] = tmpTransformHand[2] + diffOriginZ;
 			
 			vector tmpOrigin = owner.CoordToParent(tmpTransformHand);
-			
-
-
-			
-			
-			
-			//tmpOrigin = vector.Lerp(owner.CoordToParent(leftHandTransform[3]), tmpOrigin, 0.5);
 			vector tmpProjection = tmpOrigin;
 
-			
-			//DecalWrapper(worldTmp.CreateDecal(owner, origin, testProj, 1, 5, 0, 1, 1, tempMaterial, -1, materialColor));
-			//DecalWrapper(worldTmp.CreateDecal(owner, origin, testProj, 2, 6, 0, 1, 1, tempMaterial, -1, materialColor));
-			DecalWrapper newTmpWrapperLeft = DecalWrapper(worldTmp.CreateDecal(owner, tmpOrigin, tmpProjection, nearClip, farClip, 0, 1, 1, tempMaterial, -1, materialColor));
+			DecalWrapper newTmpWrapperLeft = DecalWrapper(worldTmp.CreateDecal(owner, tmpOrigin, tmpProjection, nearClip, farClip, rotation, 1, 1, tempMaterial, -1, materialColor));
 			stack.Insert(newTmpWrapperLeft);
-			
-			if (doubleSpawn)
-			{
-				
-				vector tmpOrigin2 = owner.CoordToParent(rightHandTransform[2]);
-				
-				tmpOrigin2[0] = tmpOrigin2[0] + diffOriginX;
-				tmpOrigin2[1] = tmpOrigin[1] + diffOriginY;
-				tmpOrigin2[2] = tmpOrigin2[2] + diffOriginZ;
-				vector tmpProjection2 = tmpOrigin2;
-				
-				
+			if(debugSpheres)
 				Debug_DrawSphereAtPos(tmpOrigin, COLOR_RED);
-				Print(tmpOrigin);
-				//Debug_DrawSphereAtPos(tmpOrigin2, COLOR_RED);
 
-				
-				
-					
-				DecalWrapper newTmpWrapperRight = DecalWrapper(worldTmp.CreateDecal(owner, tmpOrigin2, tmpProjection2, nearClip, farClip, 0, 1, 1, tempMaterial, -1, materialColor));
-				stack.Insert(newTmpWrapperRight);
-			}
-			
-
-			
-			
-			
-			
-			
-			
-
-		// 	DecalWrapper newTmpWrapper2 = DecalWrapper(worldTmp.CreateDecal(owner, origin, testProj, 3, 6, 0, 1, 1, tempMaterial, -1, materialColor));
-//		stack.Insert(newTmpWrapper2);
-
-			//DecalWrapper newTmpWrapper3= DecalWrapper(worldTmp.CreateDecal(owner, origin, testProj, 4, 9, 0, 1, 1, tempMaterial, -1, materialColor));
-			//stack.Insert(newTmpWrapper3);
-
-			//DecalWrapper newTmpWrapper = DecalWrapper(worldTmp.CreateDecal(owner, origin, testProj, nearClip, farClip, 0, 1, 1, tempMaterial, -1, materialColor));
-//			stack.Insert(newTmpWrapper);
 		}
 
 		
