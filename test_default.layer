@@ -1,3 +1,11 @@
+RiverEntity {
+ coords 28.118 0.228 24.053
+ GeneratorType GeneratorTypeForest "{59AD144D4B2A819F}" {
+ }
+ Width 20.484
+ Material "{53A33317B1C9B8E0}Terrains/Common/Water/River/RiverSurface_01.emat"
+ GUID "59AD144D5B787982"
+}
 $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final/Campaign_US_AI.et" {
  {
   coords 18.289 1.001 13.853

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5F734A6A9DF40579}materials/bloodpool/HFMaterials/032.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}
