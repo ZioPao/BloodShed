@@ -74,8 +74,43 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
   coords 19.194 1.001 17.971
  }
 }
-SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
- coords 13.876 1.001 16.335
+$grp SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
+ {
+  coords 13.876 1.001 16.335
+ }
+ {
+  coords 15.268 1.001 16.246
+ }
+ {
+  coords 11.444 1.001 16.244
+ }
+ {
+  coords 12.836 1.001 16.155
+ }
+ {
+  coords 12.921 1.001 20.577
+ }
+ {
+  coords 13.961 1.001 20.757
+ }
+ {
+  coords 15.353 1.001 20.668
+ }
+ {
+  coords 11.529 1.001 20.666
+ }
+ {
+  coords 5.653 1.001 16.131
+ }
+ {
+  coords 6.693 1.001 16.311
+ }
+ {
+  coords 8.085 1.001 16.222
+ }
+ {
+  coords 4.261 1.001 16.22
+ }
 }
 $grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn_E_03_Wall_01.et" {
  {
