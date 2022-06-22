@@ -13,8 +13,6 @@ MatPBRDecal {
  NormalPower 0.564
  NMOMap "{52D743D555B015F9}materials/weapon_splatter/nmo.edds"
  GlobalMapsUVTransform MatUVTransform "{59A8FCE7962618BE}" {
-  TilingU 10
-  TilingV 10
   OffsetU 0.007
   Rotation 13
  }

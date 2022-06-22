@@ -1,8 +1,7 @@
 MatPBRDecal {
- Color 0.172 0 0 1
+ Color 0.036 0 0 1
  SpecularMul 0.845
- AlphaTest 0.285
- AlphaMul 3.592
+ AlphaMul 3.838
  BlendMode AlphaBlend
  RoughnessScale 0
  MetalnessScale 0
@@ -10,11 +9,9 @@ MatPBRDecal {
  DielectricReflectance 0.059
  BCRMap "{8D87419C176F15DE}TestMaterials/bcrTest.edds"
  OpacityMap "{00C8E50252ACBCCD}TestMaterials/alphaTest.edds"
- NormalPower 1.494
+ NormalPower 4
  NMOMap "{AC774472CFC2C7A3}TestMaterials/nmoTest.edds"
  GlobalMapsUVTransform MatUVTransform "{59A8FCE7962618BE}" {
-  TilingU 20
-  TilingV 20
  }
  GBufferNormal 1
  NormalCombinePower 2.014

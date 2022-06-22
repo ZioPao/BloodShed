@@ -7,17 +7,6 @@ $grp DecalEntity {
   Mat "{C2189FD50E20EBBA}test3/54.emat"
  }
  {
-  coords 14.91 2.457 16.271
-  angleX -2.872
-  angleY 180
-  angleZ -90
-  scale 3.9
-  FarPlane 0.433
-  TerrainOnly 0
-  NearestOnly 1
-  Mat "{6C7068F1B7E5F1EB}materials/bloodpool/49Test.emat"
- }
- {
   coords 23.957 1.278 18.41
   angleX -51.531
   angleY 70.061

@@ -23,12 +23,10 @@ class ABL_AnimatedDecalManager : GenericEntity
 	
 	private World m_world;
 	int materialColor;	//todo make this dynamic 
-	float waitTimeBetweenFrames;
+	float waitTimeBetweenFrames = 0.1;
 	float currentTime;
 
-	const string ABL_FileNameJson = "ABL_Settings.json";
-	const string ABL_MOD_ID = "59951797A291CA02";				//it's probably possible to get this in a better way but ok
-	ref map<string, string> ablSettings;
+	//ref map<string, string> ablSettings;
 
 	
 	
@@ -72,27 +70,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 		
 		//Print(ProceduralTexture.GenerateAlphaTexture());
 		
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		//Settings initialization stuff 
-		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-
-		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 		
-		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.1"));
-
-		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
-		{
-			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
-		}
-		else if (!ablSettings)
-		{
-			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
-			ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);
-			
-		}
-		
-
-		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		
 		
@@ -126,8 +104,8 @@ class ABL_AnimatedDecalManager : GenericEntity
 			
 			
 			//set dynamic stuff here 
-			ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
-			waitTimeBetweenFrames = ablSettings.Get("waitTimeBetweenFrames").ToFloat();
+			//ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
+			//waitTimeBetweenFrames = ablSettings.Get("waitTimeBetweenFrames").ToFloat();
 				
 			if (currentTime > waitTimeBetweenFrames)
 			{
