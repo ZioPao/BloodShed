@@ -4,8 +4,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 	const string ABL_FileNameJson = "ABL_Settings.json";
 	const string ABL_MOD_ID = "59951797A291CA02";				//it's probably possible to get this in a better way but ok
-	
-	IEntity ownerChar;
+	const ResourceName weaponSplatterMaterial = "{098960A4823D679F}materials/weapon_splatter/WeaponBlood.emat";
+
+	IEntity currentCharacter;
 	bool alreadyDestroyed = false;
 	World worldTmp;
 
@@ -16,7 +17,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	override void OnInit(IEntity owner)
 	{
 		super.OnInit(owner);
-		ownerChar = owner;
+		currentCharacter = owner;
 		auto world = owner.GetWorld();
 		
 		
@@ -31,19 +32,18 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
 		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 			
-		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.1"));
-		ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
-		ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
-		ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
-		ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
-		ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
-		ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
-		
-		
+		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033"));
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
 		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6"));
 		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
-	
+		//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
+		//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
+		//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
+		//ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
+		//ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
+		//ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
+		
+		
 		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
 			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
 		else if (!ablSettings)
@@ -71,106 +71,90 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 			
-		ABL_AnimatedDecalManager tempManager;		//todo move this away
-		tempManager = ABL_AnimatedDecalManager.GetInstance();
-		
-		
+		//Setup AnimatedDecalManager
+		ABL_AnimatedDecalManager animatedDecalManager;		
+		animatedDecalManager = ABL_AnimatedDecalManager.GetInstance();		
+		if (!animatedDecalManager)
+			animatedDecalManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
+			
 		
 		ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
 
-
-		array<string> boneNames = new array<string>();
-		ownerChar.GetBoneNames(boneNames);
 		
-		//we've got the local node id, we need the external one though. So.
-		vector testVec[4];
-		vector test1[4];
+		//Useless
+		vector _tmpVec[4];
+		int _correctBoneId;
+		//Useless
 		
-		int correctBoneIndex
 		int correctNodeId;
-
 		int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
+		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, _tmpVec, _correctBoneId, correctNodeId);
+		
 
-		pHitZone.TryGetColliderDescription(ownerChar, colliderDescriptorIndex, test1, correctBoneIndex, correctNodeId);
 		
-		
-		if (!tempManager)
-			tempManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
-			
-		
-		Print(pHitZone.GetName());
 		if (hitTransform[0].Length() != 0)
 		{
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
-				//Print("Start blood");
-				
-				// we need to get the angle before he dies 
-				GetGame().GetCallqueue().CallLater(tempManager.StartNewAnimation, 2000, false, ownerChar, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
+				GetGame().GetCallqueue().CallLater(animatedDecalManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, true, 1.5, correctNodeId);
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
-				tempManager.StartNewAnimation(ownerChar,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
+				animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
 		
+
+			GenerateWeaponSplatters(currentCharacter, ablSettings);
+
 			
-			/* WEAPON SPLATTERS */
-			PlayerManager pMan = GetGame().GetPlayerManager();
-			SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
-			IEntity currentPlayer = m_playerController.GetMainEntity();
-			vector playerTransform[4];
-
-			currentPlayer.GetTransform(playerTransform);
-			//Print("Applying Decal on damaged entity");
-			
-			int maxDecalsPerChar = ablSettings.Get("maxDecalsPerChar").ToInt();
-			ManageDecalStack(currentCharacterDecals, ownerChar, hitTransform[0], hitTransform[1], 0, 2, maxDecalsPerChar);
-
-			vector originChar = ownerChar.GetOrigin();
-			float farClip = ablSettings.Get("farClip").ToFloat();
-
-			if (vector.Distance(playerTransform[3], originChar) < 3)
-			{
-				//Print("Applying Decals on Player Weapon");
-				int maxDecalsPlayerWeapon = ablSettings.Get("maxDecalsPlayerWeapon").ToInt();
-
-				float nearClip = ablSettings.Get("nearClip").ToFloat();
-				ManageDecalStack(currentPlayerDecals, currentPlayer, hitTransform[0], hitTransform[1], nearClip, farClip, maxDecalsPlayerWeapon);
-				Print("________________________");
-			}
 		}
 	}
+	
+	
+	
+	void GenerateWeaponSplatters(IEntity currentChar, map<string,string> settings)
+	{
+		
+		// Settings
+		float farClip = ablSettings.Get("farClip").ToFloat();
+		float nearClip = ablSettings.Get("nearClip").ToFloat();
+		int maxDecalsPlayerWeapon = ablSettings.Get("maxDecalsPlayerWeapon").ToInt();	
+		bool debugSpheres = settings.Get("debugSpheres").ToInt();
+		
+		// Other characters 
+		int maxDecalsPerChar = ablSettings.Get("maxDecalsPerChar").ToInt();
+		ManageWeaponDecalsStack(currentChar, currentCharacterDecals, 0, 2, maxDecalsPerChar);
+
+		// Player Weapon
+		PlayerManager pMan = GetGame().GetPlayerManager();
+		SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		IEntity currentPlayer = m_playerController.GetMainEntity();
+		vector playerTransform[4];
+		currentPlayer.GetTransform(playerTransform);		
+			
+
+		
+		
+		vector originCurrentCharacter = currentChar.GetOrigin();
+
+		if (vector.Distance(playerTransform[3], originCurrentCharacter) < 3)
+			ManageWeaponDecalsStack(currentPlayer, currentPlayerDecals, nearClip, farClip, maxDecalsPlayerWeapon, debugSpheres);
+		
+	
+	}
+	
+
 
 	
 	
 	
-	void ManageDecalStack(array<ref DecalWrapper> stack, IEntity owner, vector hitPosition, vector hitDirection, float nearClip, float farClip, int maxDecals)
+	
+	
+	
+	void ManageWeaponDecalsStack(IEntity owner, array<ref DecalWrapper> stack, float nearClip, float farClip, int maxDecals, bool debugSpheres = false)
 	{
 		int materialColor = Color.FromRGBA(16, 0, 0,255).PackToInt();		//move this away
-		
-		auto param = new TraceParam();
-  		param.Start = hitPosition;
-  		param.End = hitPosition + hitDirection * farClip;
-  		param.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
-  		param.Exclude = owner;
-		float intersectionDistance = worldTmp.TraceMove(param, NULL) * farClip;
-		vector intersectionPosition = hitPosition + (hitDirection * intersectionDistance);
-		
-		ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
-		float diffOriginX = ablSettings.Get("diffOriginX").ToFloat();
-		float diffOriginY = ablSettings.Get("diffOriginY").ToFloat();
-		float diffOriginZ = ablSettings.Get("diffOriginZ").ToFloat();
-		
-		float decalAngle = ablSettings.Get("decalAngle").ToFloat();
-		bool debugSpheres = ablSettings.Get("debugSpheres").ToInt();
-		
-		
-		
-		float rotation = Math.RandomFloatInclusive(-decalAngle, decalAngle);
-
-		//ResourceName tempMaterial = "{82129FA9BA80D8F4}materials/WeaponBloodSecondTry.emat";
-		ResourceName tempMaterial = "{098960A4823D679F}materials/weapon_splatter/WeaponBlood.emat";
-		
 		int count = stack.Count();
+		
 		if (count >= maxDecals)
 		{
 			int index = Math.RandomIntInclusive(0, stack.Count() - 1);
@@ -185,7 +169,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 		}
 		
-		
+		// Tries to generate a decal
 		count = stack.Count();
 		if (count < maxDecals)
 		{
@@ -196,17 +180,17 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 			
 			vector tmpTransformHand = leftHandTransform[3];
-			tmpTransformHand[0] = tmpTransformHand[0] + diffOriginX;
-			tmpTransformHand[1] = tmpTransformHand[1] + diffOriginY;
-			tmpTransformHand[2] = tmpTransformHand[2] + diffOriginZ;
+			tmpTransformHand[0] = tmpTransformHand[0]; //+ diffOriginX;
+			tmpTransformHand[1] = tmpTransformHand[1]; //+ diffOriginY;
+			tmpTransformHand[2] = tmpTransformHand[2]; //+ diffOriginZ;
 			
-			vector tmpOrigin = owner.CoordToParent(tmpTransformHand);
-			vector tmpProjection = tmpOrigin;
+			vector origin = owner.CoordToParent(tmpTransformHand);
+			vector projection = origin;
 
-			DecalWrapper newTmpWrapperLeft = DecalWrapper(worldTmp.CreateDecal(owner, tmpOrigin, tmpProjection, nearClip, farClip, rotation, 1, 1, tempMaterial, -1, materialColor));
+			DecalWrapper newTmpWrapperLeft = DecalWrapper(worldTmp.CreateDecal(owner, origin, projection, nearClip, farClip, 0, 1, 1, weaponSplatterMaterial, -1, materialColor));
 			stack.Insert(newTmpWrapperLeft);
 			if(debugSpheres)
-				MCF_Debug.DrawSphereAtPos(tmpOrigin, COLOR_RED);
+				MCF_Debug.DrawSphereAtPos(origin, COLOR_RED);
 
 		}
 
