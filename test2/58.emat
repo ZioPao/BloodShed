@@ -1,8 +1,0 @@
-MatPBRDecal {
-BCRMap "{FB701D9BC3C9CB33}test2/albedo frames/tile058.edds"
-OpacityMap "{74193CB88692B8D4}test2/opacity frames/tile058.edds"
-NMOMap "{2488945FE1AEE610}test2/normal frames/tile058.edds"
-Color 0.179 0.006 0.006 1
-NormalPower -0.471
-AlphaTest 0.3
-}

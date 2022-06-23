@@ -1,9 +1,9 @@
 MatPBRDecal {
  Color 0.128 0.004 0.004 1
- AlphaTest 0.646
- AlphaMul 1.393
+ AlphaTest 0.742
+ AlphaMul 1.237
  BCRMap "{E46249A261CAAE98}materials/wounds/entry_wound/blood4.edds"
- OpacityMap "{BAB44B9889A823E7}materials/wounds/entry_wound/blood4o.edds"
+ OpacityMap "{40F60BF415F42259}materials/wounds/entry_wound/blood4o.edds"
  NormalPower 0.606
  NMOMap "{10C07FD8095F791B}materials/wounds/entry_wound/blood4_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{59AD4012A428BC72}" {
