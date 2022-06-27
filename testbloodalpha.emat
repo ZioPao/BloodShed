@@ -1,0 +1,18 @@
+MatPBRDecal {
+ Color 0.257 0 0 1
+ ClutterThresholdAngle 88.821
+ Specular 0.208 0.208 0.208 1
+ SpecularMul 3.954
+ AlphaTest 0.573
+ AlphaMul 3.642
+ BlendMode AlphaBlend
+ RoughnessScale 0.181
+ MetalnessScale 0.01
+ AOScale 0.392
+ BCRMap "{F52D8E678E1D3027}TestAlpha/130.edds"
+ OpacityMap "{F52D8E678E1D3027}TestAlpha/130.edds"
+ NormalPower 0.765
+ NMOMap "{F52D8E678E1D3027}TestAlpha/130.edds"
+ GBufferNormal 1
+ NormalCombinePower 3.831
+}

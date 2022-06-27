@@ -1,3 +1,18 @@
+$grp DecalEntity {
+ {
+  coords 30.188 1.001 27.065
+  angleX -90
+  angleY -180
+  angleZ -180
+  Mat "{4E301E96FBEBB515}testbloodalpha.emat"
+ }
+ {
+  coords 30.124 1.001 26.604
+  angleX -90
+  angleZ -81.478
+  Mat "{4E301E96FBEBB515}testbloodalpha.emat"
+ }
+}
 RiverEntity {
  coords 28.118 0.228 24.053
  GeneratorType GeneratorTypeForest "{59AD144D4B2A819F}" {
