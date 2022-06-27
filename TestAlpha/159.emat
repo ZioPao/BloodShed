@@ -1,0 +1,17 @@
+MatPBRDecal {
+BCRMap "TestAlpha/159.edds"
+OpacityMap "TestAlpha/159.edds"
+NMOMap "TestAlpha/159.edds"
+Color 0.098 0 0 1
+SpecularMul 5
+RoughnessScale 0.121
+MetalnessScale 0
+DielectricReflectance 0.038 
+AOScale 0 
+NormalPower 1.2
+BlendMode AlphaBlend
+AlphaTest 0.64
+AlphaMul 1
+GBufferNormal 1
+NormalCombinePower 1.956
+}
