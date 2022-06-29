@@ -36,8 +36,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		ablVariablesMap.Set("bloodpoolMinimumAlphaChange", new VariableInfo("Minimum limit for random change of bloodpool alpha", "0.0002"));
 		ablVariablesMap.Set("bloodpoolMaximumAlphaChange", new VariableInfo("Max upper limit for random change of bloodpool alpha", "0.03"));
 		
-		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.002"));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.05"));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.003"));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.04"));
 
 		
 		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "4"));
@@ -113,14 +113,14 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				alreadyDestroyed = true;		//only once
 			}
 			else if (damage > 20.0)
-				animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.GENERIC_SPLATTER, false, 0.0, correctNodeId);
+				animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
 		
 
 			GenerateWeaponSplatters(currentCharacter, ablSettings);
 			
 			
 			//Basically bloodlust I guess
-			ABL_AnimatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1], "{B3196D0D8CB491D5}materials/ground_splatter/ground_splatter.emat");
+			animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
 
 			
 		}
