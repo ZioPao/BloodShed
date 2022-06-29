@@ -33,9 +33,21 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 			
 		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033"));
+		ablVariablesMap.Set("bloodpoolMinimumAlphaChange", new VariableInfo("Minimum limit for random change of bloodpool alpha", "0.0002"));
+		ablVariablesMap.Set("bloodpoolMaximumAlphaChange", new VariableInfo("Max upper limit for random change of bloodpool alpha", "0.03"));
+		
+		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.002"));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.05"));
+
+		
+		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "4"));
+		
+		
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
 		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6"));
 		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
+		
+		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1"));
 		//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
 		//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
 		//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
