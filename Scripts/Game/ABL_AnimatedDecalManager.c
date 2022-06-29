@@ -206,11 +206,11 @@ class ABL_AnimatedDecalManager : GenericEntity
 				{
 					traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, traceFlags, intersectionPosition);
 					vector pos = character.CoordToParent(mat[3]);
-					pos[2] = pos[2] + 0.5;
+					pos[2] = pos[2];//+ 0.5;
 					origin = pos;
 					projection = -traceParam.TraceNorm;
 					
-					angle = SelectBloodpoolAngle(origin);
+					angle = 0;		//SelectBloodpoolAngle(origin);
 					indexAlpha = Math.RandomIntInclusive(0, animationMaterials.Get(EDecalType.BLOODPOOL).Count() - 1);			//todo make this dynamic
 				    chosenResource = tempFrames[indexAlpha];
 					settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);			//refresh!
@@ -401,7 +401,8 @@ class ABL_AnimatedDecalManager : GenericEntity
 	{
 		float tmpAngle;
 		int randomNumber = Math.RandomIntInclusive(0,2);
-
+		
+		//todo not sure if this is needed anymore
 		switch(randomNumber)
 		{
 			case 0:
