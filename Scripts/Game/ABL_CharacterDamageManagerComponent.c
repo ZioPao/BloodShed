@@ -120,7 +120,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			
 			
 			//Basically bloodlust I guess
-			animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
+			
+			//random chance
+			
+			if (Math.RandomInt(0,10) > 5)		//todo make it customizable
+				animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
 
 			
 		}

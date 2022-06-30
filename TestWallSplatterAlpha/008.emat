@@ -1,8 +1,8 @@
 MatPBRDecal {
  Color 0.098 0 0 1
  SpecularMul 5
- AlphaTest 0.72
- AlphaMul 5
+ AlphaTest 1.253
+ AlphaMul 1.476
  BlendMode AlphaBlend
  RoughnessScale 0.121
  MetalnessScale 0
@@ -15,5 +15,5 @@ MatPBRDecal {
  GlobalMapsUVTransform MatUVTransform "{59BA76C0B3D0255B}" {
  }
  GBufferNormal 1
- NormalCombinePower 1.956
+ NormalCombinePower 4
 }

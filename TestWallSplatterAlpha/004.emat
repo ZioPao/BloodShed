@@ -1,8 +1,8 @@
 MatPBRDecal {
  Color 0.098 0 0 1
  SpecularMul 5
- AlphaTest 0.752
- AlphaMul 1.203
+ AlphaTest 0.86
+ AlphaMul 3.595
  BlendMode AlphaBlend
  RoughnessScale 0.121
  MetalnessScale 0

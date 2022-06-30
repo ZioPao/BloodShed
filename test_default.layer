@@ -90,18 +90,44 @@ $grp SCR_ChimeraCharacter : "{2619482C6C4202E0}Prefabs/Characters/Campaign/Final
   angleY -3.59
  }
 }
+$grp StaticModelEntity : "{315CA2DA8D245C7A}Prefabs/Structures/Walls/Brick/BrickWall_01_2m.et" {
+ {
+  coords 48.245 1.103 12.294
+ }
+ {
+  coords 46.405 1.106 12.313
+ }
+ {
+  coords 44.408 1.109 12.314
+ }
+ {
+  coords 42.568 1.112 12.333
+ }
+ {
+  coords 38.877 1.107 12.367
+ }
+ {
+  coords 35.04 1.113 12.387
+ }
+ {
+  coords 36.88 1.11 12.368
+ }
+ {
+  coords 40.717 1.104 12.348
+ }
+}
 $grp SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character_Base.et" {
  {
-  coords 13.876 1.001 16.335
+  coords 46.248 1.001 13.221
  }
  {
-  coords 15.268 1.001 16.246
+  coords 47.64 1.001 13.132
  }
  {
-  coords 11.444 1.001 16.244
+  coords 43.816 1.001 13.13
  }
  {
-  coords 12.836 1.001 16.155
+  coords 45.208 1.001 13.041
  }
  {
   coords 14.433 1.001 23.11
@@ -112,32 +138,29 @@ $grp SCR_ChimeraCharacter : "{37578B1666981FCE}Prefabs/Characters/Core/Character
   angleY 62.893
  }
  {
-  coords 15.353 1.001 20.668
+  coords 47.725 1.001 17.554
   angleY 36.531
  }
  {
-  coords 11.529 1.001 20.666
+  coords 43.901 1.001 17.552
   angleY -131.316
  }
  {
-  coords 5.653 1.001 16.131
+  coords 38.025 1.001 13.017
  }
  {
-  coords 6.693 1.001 16.311
+  coords 39.065 1.001 13.197
  }
  {
-  coords 8.085 1.001 16.222
+  coords 40.457 1.001 13.108
  }
  {
-  coords 4.261 1.001 16.22
+  coords 36.633 1.001 13.106
  }
 }
 $grp GenericEntity : "{C1F38F057250EE4E}Prefabs/Structures/Agriculture/Barn/Barn_E_03_Wall_01.et" {
  {
   coords 18.844 -1.46 13.007
- }
- {
-  coords 26.44 1.001 16.091
  }
  {
   coords 21.136 1.001 2.612

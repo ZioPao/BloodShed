@@ -1,0 +1,18 @@
+MatPBRDecal {
+ Color 0.098 0 0 1
+ SpecularMul 5
+ AlphaTest 0.378
+ AlphaMul 0.659
+ RoughnessScale 0.121
+ MetalnessScale 0
+ AOScale 0
+ DielectricReflectance 0.038
+ BCRMap "{E871AA3798B3CBE3}TestWallSplatterAlpha/test.edds"
+ OpacityMap "{E871AA3798B3CBE3}TestWallSplatterAlpha/test.edds"
+ NormalPower -0.473
+ NMOMap "{E871AA3798B3CBE3}TestWallSplatterAlpha/test.edds"
+ GlobalMapsUVTransform MatUVTransform "{59BA76C0B3D0255B}" {
+ }
+ GBufferNormal 1
+ NormalCombinePower 1.956
+}
