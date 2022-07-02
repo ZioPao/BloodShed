@@ -1,17 +1,17 @@
 MatPBRDecal {
 BCRMap "TestWallSplatterAlpha2/029.edds"
 OpacityMap "TestWallSplatterAlpha2/029.edds"
-NMOMap "TestWallSplatterAlpha2/029.edds"
+NMOMap "TestWallSplatterAlpha2/normals/029.edds"
 Color 0.098 0 0 1
 SpecularMul 5
 RoughnessScale 0.121
 MetalnessScale 0
 DielectricReflectance 0.038 
 AOScale 0 
-NormalPower 1.2
+NormalPower 0.444
 BlendMode AlphaBlend
-AlphaTest 0.94
-AlphaMul 2
+AlphaTest 0.868
+AlphaMul 1.5
 GBufferNormal 1
 NormalCombinePower 1.956
 }

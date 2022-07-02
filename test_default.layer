@@ -7,7 +7,7 @@ $grp DecalEntity {
   Mat "{4E301E96FBEBB515}testbloodalpha.emat"
  }
  {
-  coords 30.124 1.001 26.604
+  coords 30.124 1.383 26.604
   angleX -90
   angleZ -81.478
   Mat "{4E301E96FBEBB515}testbloodalpha.emat"

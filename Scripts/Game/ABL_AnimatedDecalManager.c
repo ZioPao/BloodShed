@@ -291,7 +291,7 @@ class ABL_AnimatedDecalManager : GenericEntity
             if (indexAlpha != -1)
 			{
 				
-				//Print("Reset Alpha Values for " + chosenResource);
+				Print("Reset Alpha Values for " + chosenResource);
 				//tmp.SetParam("AlphaTest",alphaTestValue);
 				tmp.SetParam("AlphaMul", alphaMulValue);
 				

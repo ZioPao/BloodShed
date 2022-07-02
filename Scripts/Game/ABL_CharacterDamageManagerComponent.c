@@ -40,7 +40,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.04"));
 
 		
-		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "4"));
+		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "5"));			//max 5
 		
 		
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
@@ -123,7 +123,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			
 			//random chance
 			
-			if (Math.RandomInt(0,10) > 5)		//todo make it customizable
+			if (Math.RandomInt(0,21) > 10)		//todo make it customizable
 				animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
 
 			
