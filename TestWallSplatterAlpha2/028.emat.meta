@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1F55BF963EBB2B8F}TestWallSplatterAlpha2/028.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

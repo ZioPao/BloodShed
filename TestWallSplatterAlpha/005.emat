@@ -8,10 +8,10 @@ MatPBRDecal {
  MetalnessScale 0
  AOScale 0
  DielectricReflectance 0.038
- BCRMap "{A3E0CC36068334A4}TestWallSplatterAlpha/5.edds"
+ BCRMap "{45D9D176E57A1025}TestWallSplatterAlpha/noise_bcr.edds"
  OpacityMap "{A3E0CC36068334A4}TestWallSplatterAlpha/5.edds"
  NormalPower 1.2
- NMOMap "{A3E0CC36068334A4}TestWallSplatterAlpha/5.edds"
+ NMOMap "{7D016AE43C0D42BB}TestWallSplatterAlpha/noise_nmo.edds"
  GlobalMapsUVTransform MatUVTransform "{59BA76C0B3D0255B}" {
  }
  GBufferNormal 1
