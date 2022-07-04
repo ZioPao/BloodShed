@@ -8,6 +8,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 	IEntity currentCharacter;
 	bool alreadyDestroyed = false;
+	float timerBetweenSplatters; 
+	
+	
 	World worldTmp;
 
 	
@@ -27,46 +30,58 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			currentPlayerDecals = new array<ref DecalWrapper>();
 		
 		worldTmp = GetGame().GetWorld();
+		
+		//TODO THIS IS WRONG! WE CAN'T PUT IT HERE!
+
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//Settings initialization stuff 
 		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
 		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
-			
+				
 		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033"));
 		ablVariablesMap.Set("bloodpoolMinimumAlphaChange", new VariableInfo("Minimum limit for random change of bloodpool alpha", "0.0002"));
 		ablVariablesMap.Set("bloodpoolMaximumAlphaChange", new VariableInfo("Max upper limit for random change of bloodpool alpha", "0.03"));
-		
-		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.003"));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.04"));
-
-		
+			
+		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.0001"));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.02"));
+	
+			
 		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "5"));			//max 5
 		
-		
+		//todo this is broken... cant scroll
+		//ablVariablesMap.Set("test1", new VariableInfo("gfsdgdfgds Size", "1"));
+		//ablVariablesMap.Set("test2", new VariableInfo("asdadsad Size", "1"));
+		//ablVariablesMap.Set("t3", new VariableInfo("asdasdagsagfgadfgfd Size", "1"));
+		//ablVariablesMap.Set("t4", new VariableInfo("gfdgdfsgdgdgdfssdgfsdaasd sSize", "1"));
+	
+			
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
 		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6"));
 		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
-		
-		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1"));
-		//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
-		//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
-		//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
-		//ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
-		//ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
-		//ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
-		
-		
+			
+		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5"));
+		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1"));
+			
+			
+
+			//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
+			//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
+			//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
+			//ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
+			//ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
+			//ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
+			
+			
 		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
 			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
 		else if (!ablSettings)
 		{
 			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
-			ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);
-				
+			ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);		
 		}
-			
-	
-		//////////////////////////////////////////////////////////////////////////////////////////////////
+				
+		
+			//////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		
 	}
@@ -83,50 +98,64 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 			
-		//Setup AnimatedDecalManager
-		ABL_AnimatedDecalManager animatedDecalManager;		
-		animatedDecalManager = ABL_AnimatedDecalManager.GetInstance();		
-		if (!animatedDecalManager)
-			animatedDecalManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
-			
 		
-		ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
-
 		
-		//Useless
-		vector _tmpVec[4];
-		int _correctBoneId;
-		//Useless
-		
-		int correctNodeId;
-		int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
-		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, _tmpVec, _correctBoneId, correctNodeId);
-		
-
-		
-		if (hitTransform[0].Length() != 0)
+		if (MCF_SettingsManager.IsInitialized())
 		{
-			
-			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
-			{
-				GetGame().GetCallqueue().CallLater(animatedDecalManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
-				alreadyDestroyed = true;		//only once
-			}
-			else if (damage > 20.0)
-				animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
+			MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
+			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
 		
-
-			GenerateWeaponSplatters(currentCharacter, ablSettings);
 			
+			//Setup AnimatedDecalManager
+			ABL_AnimatedDecalManager animatedDecalManager;		
+			animatedDecalManager = ABL_AnimatedDecalManager.GetInstance();		
+			if (!animatedDecalManager)
+				animatedDecalManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
+				
 			
-			//Basically bloodlust I guess
+			ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
+	
 			
-			//random chance
+			//Useless
+			vector _tmpVec[4];
+			int _correctBoneId;
+			//Useless
 			
-			if (Math.RandomInt(0,21) > 10)		//todo make it customizable
-				animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
-
+			int correctNodeId;
+			int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
+			pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, _tmpVec, _correctBoneId, correctNodeId);
 			
+	
+			
+			if (hitTransform[0].Length() != 0)
+			{
+				
+				if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
+				{
+					GetGame().GetCallqueue().CallLater(animatedDecalManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
+					alreadyDestroyed = true;		//only once
+				}
+				else if (damage > 20.0)
+				{
+					//todo add a timer to prevent more than 1 splatter on the wall 
+					animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
+					//
+					
+				}
+			
+	
+				GenerateWeaponSplatters(currentCharacter, ablSettings);
+				
+				
+				//Basically bloodlust I guess
+				
+				//random chance
+				
+				if (Math.RandomInt(0,21) > 10)		//todo make it customizable
+					animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
+	
+				
+			}
 		}
 	}
 	
