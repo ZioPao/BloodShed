@@ -362,17 +362,10 @@ class ABL_AnimatedDecalManager : GenericEntity
 					
 					modifiedAlphaMul = dMaterialInfo.alphaMul + Math.RandomFloat(minimumAlphaChange, maximumAlphaChange);
 					tmp.SetParam("AlphaMul", modifiedAlphaMul);
-
-					
 					dMaterialInfo.alphaMul = modifiedAlphaMul; 
-
-
-
-					
 					
 					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dPositionInfo.originPosition, dPositionInfo.projectionDirection, nearClip, farClip, dBaseInfo.rotation, dBaseInfo.size, 1, chosenResource, -1, materialColor);
 					
-					//currentFrame++;
 					dBaseInfo.decal = newDecal;
 					dBaseInfo.currentFrame = currentFrame;
 					decalsSpawned.Set(index, dInfo);		//reset it... not sure if it's needed tbh
@@ -382,6 +375,9 @@ class ABL_AnimatedDecalManager : GenericEntity
 			{
 				decalsSpawned.Remove(index);
 				GetGame().GetCallqueue().Remove(SpawnAnimatedFrames);
+				
+				
+				
 			}
 			
 		}

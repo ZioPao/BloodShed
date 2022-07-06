@@ -128,6 +128,10 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 				{
 					GetGame().GetCallqueue().CallLater(animatedDecalManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
+					
+					
+					// call another method to manage particles 
+					
 					alreadyDestroyed = true;		//only once
 				}
 				else if (damage > 20.0)
@@ -277,11 +281,49 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	}
 	
 	
+	
+	override void CreateBleedingParticleEffect(notnull HitZone hitZone, float bleedingRate, int colliderDescriptorIndex)
+	{
+		// Play Bleeding particle
+		if (m_sBleedingParticle.IsEmpty())
+			return;
+		
+		RemoveBleedingParticleEffect(hitZone);
+		
+		if (bleedingRate == 0 || m_fBleedingParticleRateScale == 0)
+			return;
+		
+		// TODO: Blood traces on ground that should be left regardless of clothing, perhaps just delayed
+		SCR_CharacterHitZone characterHitZone = SCR_CharacterHitZone.Cast(hitZone);
+		
+		//Let's just disable this.
+		//if (characterHitZone.IsCovered())
+		//	return;
+		
+		// Get bone node
+		vector transform[4];
+		int boneIndex;
+		int boneNode;
+		if (!hitZone.TryGetColliderDescription(GetOwner(), colliderDescriptorIndex, transform, boneIndex, boneNode))
+			return;
+		
+		SCR_ParticleEmitter particleEmitter = SCR_ParticleAPI.PlayOnObjectPTC(GetOwner(), m_sBleedingParticle, vector.Zero, vector.Zero, boneNode);
+		SCR_ParticleAPI.LerpAllEmitters(particleEmitter, bleedingRate * m_fBleedingParticleRateScale, EmitterParam.BIRTH_RATE);
+		
+		if (!m_mBleedingParticles)
+			m_mBleedingParticles = new map<HitZone, SCR_ParticleEmitter>;
+		
+		m_mBleedingParticles.Insert(hitZone, particleEmitter);
+	}
+	
 
 
 	
 
 }
+
+
+
 
 
 
