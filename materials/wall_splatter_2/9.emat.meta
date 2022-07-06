@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5FCC1EDC1E724A0C}materials/wall_splatter_2/9.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

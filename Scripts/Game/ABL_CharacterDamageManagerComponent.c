@@ -57,7 +57,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
 		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6"));
-		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
+		//ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
 			
 		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5"));
 		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1"));
@@ -139,7 +139,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				{
 					//todo add a timer to prevent more than 1 splatter on the wall 
 					animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
-					//
+					
 					
 				}
 			
@@ -168,7 +168,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		float farClip = ablSettings.Get("farClip").ToFloat();
 		float nearClip = ablSettings.Get("nearClip").ToFloat();
 		int maxDecalsPlayerWeapon = ablSettings.Get("maxDecalsPlayerWeapon").ToInt();	
-		bool debugSpheres = settings.Get("debugSpheres").ToInt();
+		bool debugSpheres = 0;			//settings.Get("debugSpheres").ToInt();
 		
 		// Other characters 
 		int maxDecalsPerChar = ablSettings.Get("maxDecalsPerChar").ToInt();

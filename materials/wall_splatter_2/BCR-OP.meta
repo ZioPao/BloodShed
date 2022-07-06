@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{97380CEF3EDEDE23}materials/wall_splatter_2/BCR-OP"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

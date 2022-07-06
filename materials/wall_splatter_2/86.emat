@@ -1,0 +1,17 @@
+MatPBRDecal {
+BCRMap "materials/wall_splatter_2/BCR-OP/86.edds"
+OpacityMap "materials/wall_splatter_2/BCR-OP/86.edds"
+NMOMap "materials/wall_splatter_2/NMO/86.edds"
+Color 0.098 0 0 1
+SpecularMul 5
+RoughnessScale 0.121
+MetalnessScale 0
+DielectricReflectance 0.038 
+AOScale 0 
+NormalPower 0.8
+BlendMode AlphaBlend
+AlphaTest 2
+AlphaMul 1.75
+GBufferNormal 1
+NormalCombinePower 1.956
+}
