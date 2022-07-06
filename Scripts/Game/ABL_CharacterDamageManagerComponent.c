@@ -47,12 +47,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 			
 		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "5"));			//max 5
-		
-		//todo this is broken... cant scroll
-		//ablVariablesMap.Set("test1", new VariableInfo("gfsdgdfgds Size", "1"));
-		//ablVariablesMap.Set("test2", new VariableInfo("asdadsad Size", "1"));
-		//ablVariablesMap.Set("t3", new VariableInfo("asdasdagsagfgadfgfd Size", "1"));
-		//ablVariablesMap.Set("t4", new VariableInfo("gfdgdfsgdgdgdfssdgfsdaasd sSize", "1"));
+
 	
 			
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
@@ -64,8 +59,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			
 			
 
-			//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
-			//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
+		//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
+		//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
 			//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
 			//ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
 			//ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
