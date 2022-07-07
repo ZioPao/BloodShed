@@ -39,14 +39,21 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 				
 		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033"));
-		ablVariablesMap.Set("bloodpoolMinimumAlphaChange", new VariableInfo("Minimum limit for random change of bloodpool alpha", "0.0002"));
-		ablVariablesMap.Set("bloodpoolMaximumAlphaChange", new VariableInfo("Max upper limit for random change of bloodpool alpha", "0.03"));
+		
+		
+		
+		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of bloodpool alpha multiplier", "0.0002"));
+		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of bloodpool alpha multiplier", "0.03"));
 			
-		ablVariablesMap.Set("wallsplatterMinimumAlphaChange", new VariableInfo("Minimum limit for random change of wall splatter alpha", "0.0001"));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaChange", new VariableInfo("Max upper limit for random change of wall splatter alpha", "0.02"));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of wall splatter alpha multiplier", "0.0001"));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of wall splatter alpha multiplier", "0.02"));
+		
+		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Minimum limit for random change of wall splatter alpha test", "0.0001"));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Max upper limit for random change of wall splatter alpha test", "0.02"));
 	
 			
-		ablVariablesMap.Set("maxAlphaTest", new VariableInfo("Max Alpha Test", "5"));			//max 5
+		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Max Alpha Multiplier limit", "5"));			//max 5
+		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Minimum Alpha Test", "0.1"));
 
 	
 			

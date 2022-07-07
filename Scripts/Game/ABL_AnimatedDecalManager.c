@@ -209,6 +209,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 				    chosenResource = tempFrames[indexAlpha];
 					size = settings.Get("bloodpoolSize").ToFloat();
 					alphaMulValue = 0.55;
+					alphaTestValue = 0.670;		//shouldn't decrease.
 
 				}
 				else 
@@ -256,6 +257,7 @@ class ABL_AnimatedDecalManager : GenericEntity
 				
                 chosenResource = tempFrames[indexAlpha];
 				alphaMulValue = 1.4;
+				alphaTestValue = 3;			//starting point
 
 				size = settings.Get("wallsplatterSize").ToFloat();
 
@@ -280,13 +282,13 @@ class ABL_AnimatedDecalManager : GenericEntity
 
             DecalBaseInfo decalBaseInfo = new DecalBaseInfo(tmpDecal, type, 0, size, angle, 1);
             DecalPositionInfo decalPositionInfo = new DecalPositionInfo(traceParam, hitPosition, hitDirection, origin, projection);
-			MaterialInfo materialInfo = new MaterialInfo(alphaMulValue, 0);      //todo need to see the og values.... set them over here, this is wrong for now
+			MaterialInfo materialInfo = new MaterialInfo(alphaMulValue, alphaTestValue);      //todo need to see the og values.... set them over here, this is wrong for now
 
             if (indexAlpha != -1)
 			{
 				
 				Print("Reset Alpha Values for " + chosenResource);
-				//tmp.SetParam("AlphaTest",alphaTestValue);
+				tmp.SetParam("AlphaTest",alphaTestValue);
 				tmp.SetParam("AlphaMul", alphaMulValue);
 				
            	 	materialInfo.SetIndexAlphaMap(indexAlpha);
@@ -319,10 +321,10 @@ class ABL_AnimatedDecalManager : GenericEntity
 			array<ResourceName> tempFrames = materialsMap.Get(dBaseInfo.type);
 			settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);			//refresh!
 			
-			float maxAlphaTest = settings.Get("maxAlphaTest").ToFloat();
-
+			float maxAlphaMul = settings.Get("maxAlphaMul").ToFloat();
+			float minAlphaTest = settings.Get("minAlphaTest").ToFloat();
 			
-			if (dMaterialInfo.alphaMul < maxAlphaTest)
+			if (dMaterialInfo.alphaMul < maxAlphaMul)
 			{
 				if (d)
 					m_world.RemoveDecal(d);
@@ -339,30 +341,61 @@ class ABL_AnimatedDecalManager : GenericEntity
 
 
 					float modifiedAlphaMul;
-					float alphaTest;
-					float minimumAlphaChange;
-					float maximumAlphaChange;
+					float modifiedAlphaTest;
+					
+					
+					float minimumAlphaMulChange;
+					float maximumAlphaMulChange;
+					
+					float minimumAlphaTestChange;
+					float maximumAlphaTestChange;
 					
 					switch(dBaseInfo.type)
 					{
 						case EDecalType.BLOODPOOL:
 						{
-							minimumAlphaChange = settings.Get("bloodpoolMinimumAlphaChange").ToFloat();
-							maximumAlphaChange = settings.Get("bloodpoolMaximumAlphaChange").ToFloat();
+							minimumAlphaMulChange = settings.Get("bloodpoolMinimumAlphMulaChange").ToFloat();
+							maximumAlphaMulChange = settings.Get("bloodpoolMaximumAlphaMulChange").ToFloat();
+							
+							minimumAlphaTestChange = 0;
+							maximumAlphaTestChange = 0;
+							
+							
+							
 							break;
 						}
 						case EDecalType.WALLSPLATTER:
 						{
-							minimumAlphaChange = settings.Get("wallsplatterMinimumAlphaChange").ToFloat();
-							maximumAlphaChange = settings.Get("wallsplatterMaximumAlphaChange").ToFloat();
+							minimumAlphaMulChange = settings.Get("wallsplatterMinimumAlphaMulChange").ToFloat();
+							maximumAlphaMulChange = settings.Get("wallsplatterMaximumAlphaMulChange").ToFloat();
+							
+							minimumAlphaTestChange = settings.Get("wallsplatterMinimumAlphaTestChange").ToFloat();
+							maximumAlphaTestChange = settings.Get("wallsplatterMaximumAlphaTestChange").ToFloat();
 							break;
 						}
 					
 					}
 					
-					modifiedAlphaMul = dMaterialInfo.alphaMul + Math.RandomFloat(minimumAlphaChange, maximumAlphaChange);
+					modifiedAlphaMul = dMaterialInfo.alphaMul + Math.RandomFloat(minimumAlphaMulChange, maximumAlphaMulChange);
 					tmp.SetParam("AlphaMul", modifiedAlphaMul);
+
+					
+					if (dMaterialInfo.alphaTest > minAlphaTest)
+					{
+						modifiedAlphaTest = dMaterialInfo.alphaTest - Math.RandomFloat(minimumAlphaTestChange, maximumAlphaTestChange);
+						tmp.SetParam("AlphaTest", modifiedAlphaTest);
+
+					}
+					else
+						modifiedAlphaTest = dMaterialInfo.alphaTest;
+					
+					
+					
+					
+					
+					
 					dMaterialInfo.alphaMul = modifiedAlphaMul; 
+					dMaterialInfo.alphaTest = modifiedAlphaTest;
 					
 					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dPositionInfo.originPosition, dPositionInfo.projectionDirection, nearClip, farClip, dBaseInfo.rotation, dBaseInfo.size, 1, chosenResource, -1, materialColor);
 					
