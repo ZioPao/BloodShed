@@ -1,0 +1,26 @@
+EffectDef {
+ Emitters {
+  EmitterDef blood {
+   ConeAngle 360 0 360
+   MaxNum 25
+   BirthRate 1
+   BirthRateRND 0.25
+   Material "{0B81C3C8F4C5861F}materials/dripping_particles/blood_drip.emat"
+   Prefab "{29FBEC1991810EEF}system/wbdata/ParticleEditor/defaultPrefab.et"
+   SizeMultiplier 0.08
+   SizeRND 0.025
+   VelAngle 1
+   RandomUFlip 1
+   Velocity 0
+   GravityMultiply 0.5
+   EmittingTime 15
+   Repeat 0
+   AlphaMast {
+    0 0 0.061 1
+   }
+   BRateMast {
+    0 0.988 1 0
+   }
+  }
+ }
+}

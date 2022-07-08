@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0B81C3C8F4C5861F}Particles/_Materials/Gas/Smoke_Base_Dust_01.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

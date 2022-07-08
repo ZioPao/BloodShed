@@ -38,31 +38,31 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
 		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
 				
-		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033"));
+		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033", EFilterType.TYPE_FLOAT));
 		
 		
 		
-		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of bloodpool alpha multiplier", "0.0002"));
-		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of bloodpool alpha multiplier", "0.03"));
+		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of bloodpool alpha multiplier", "0.0002", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of bloodpool alpha multiplier", "0.03", EFilterType.TYPE_FLOAT));
 			
-		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of wall splatter alpha multiplier", "0.0001"));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of wall splatter alpha multiplier", "0.02"));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of wall splatter alpha multiplier", "0.0001", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of wall splatter alpha multiplier", "0.02", EFilterType.TYPE_FLOAT));
 		
-		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Minimum limit for random change of wall splatter alpha test", "0.0001"));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Max upper limit for random change of wall splatter alpha test", "0.02"));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Minimum limit for random change of wall splatter alpha test", "0.0001", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Max upper limit for random change of wall splatter alpha test", "0.02", EFilterType.TYPE_FLOAT));
 	
 			
-		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Max Alpha Multiplier limit", "5"));			//max 5
-		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Minimum Alpha Test", "0.1"));
+		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Max Alpha Multiplier limit", "5", EFilterType.TYPE_FLOAT));			//max 5
+		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Minimum Alpha Test", "0.1", EFilterType.TYPE_FLOAT));
 
 	
 			
-		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2"));
-		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6"));
+		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2", EFilterType.TYPE_INT));
+		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6", EFilterType.TYPE_INT));
 		//ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
 			
-		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5"));
-		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1"));
+		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
 			
 			
 
@@ -146,19 +146,17 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 					//todo add a timer to prevent more than 1 splatter on the wall 
 					animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
 					
+
+					//spawns particles 
+					
+					
 					
 				}
 			
 	
-				GenerateWeaponSplatters(currentCharacter, ablSettings);
-				
-				
-				//Basically bloodlust I guess
-				
-				//random chance
-				
-				if (Math.RandomInt(0,21) > 10)		//todo make it customizable
-					animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
+				//GenerateWeaponSplatters(currentCharacter, ablSettings);
+				//if (Math.RandomInt(0,21) > 10)		//todo make it customizable
+				//	animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
 	
 				
 			}
@@ -166,6 +164,20 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	}
 	
 
+	
+	void GenerateBloodParticleEmitter(vector position[3])
+	{
+			
+		//SCR_ParticleEmitter particleEmitter = SCR_ParticleAPI.PlayOnObjectPTC(GetOwner(), m_sBleedingParticle, vector.Zero, vector.Zero, boneNode);
+		//SCR_ParticleAPI.LerpAllEmitters(particleEmitter, bleedingRate * m_fBleedingParticleRateScale, EmitterParam.BIRTH_RATE);
+		
+		//if (!m_mBleedingParticles)
+		//	m_mBleedingParticles = new map<HitZone, SCR_ParticleEmitter>;
+		
+		//m_mBleedingParticles.Insert(hitZone, particleEmitter);
+	
+	}
+	
 	
 	void GenerateWeaponSplatters(IEntity currentChar, map<string,string> settings)
 	{
