@@ -1,13 +1,11 @@
 Particle {
- Color 0.006 0 0 1
+ Color 0.303 0.005 0.005 1
  AlbedoMap "{00DB5AFE43BFC32C}Particles/_Textures/Steam_cloud_01_BCA.edds"
- Diffuse 1 1 1 1
- Ambient 1 1 1 1
+ Diffuse 0.068 0 0 1
  ApplyAlbedoToEmissive 0
  ReceiveShadow 1
  ReceiveProbesLighting 1
- AlphaTest 0
- AlphaMul 2
- Softness 2
+ AlphaTest 233
+ AlphaMul 1.497
  CameraBlendFar 0.001
 }

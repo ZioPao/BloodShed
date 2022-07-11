@@ -1,7 +1,7 @@
-class ABL_AnimatedDecalManagerClass : GenericEntityClass
+class ABL_AnimateBloodManagerClass : GenericEntityClass
 {}
 
-class ABL_AnimatedDecalManager : GenericEntity
+class ABL_AnimateBloodManager : GenericEntity
 {
 	
 	// 1) must be initialized one time 
@@ -31,21 +31,21 @@ class ABL_AnimatedDecalManager : GenericEntity
 	const float farClip = 5;
 	
 	
-	static ABL_AnimatedDecalManager instance;
+	static ABL_AnimateBloodManager instance;
 
 	ref array<Material> bloodsplattersLoaded;
 	ref array<Material> wallsplattersLoaded;
 	
 
 
-	static ABL_AnimatedDecalManager GetInstance()
+	static ABL_AnimateBloodManager GetInstance()
 	{
 		return instance;
 	}
 
 	
 	
-	void ABL_AnimatedDecalManager(IEntitySource src, IEntity parent)
+	void ABL_AnimateBloodManager(IEntitySource src, IEntity parent)
 	{
 
 		SetEventMask(EntityEvent.INIT | EntityEvent.FRAME);

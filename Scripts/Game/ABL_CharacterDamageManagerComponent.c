@@ -11,7 +11,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	float timerBetweenSplatters; 
 	
 	
-	World worldTmp;
+	World world;
 
 	
 	ref static array<ref DecalWrapper> currentPlayerDecals;
@@ -21,7 +21,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnInit(owner);
 		currentCharacter = owner;
-		auto world = owner.GetWorld();
+		world = owner.GetWorld();
 		
 		
 		currentCharacterDecals = new ref array<ref DecalWrapper>();
@@ -29,9 +29,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		if (!currentPlayerDecals)
 			currentPlayerDecals = new array<ref DecalWrapper>();
 		
-		worldTmp = GetGame().GetWorld();
-		
-		//TODO THIS IS WRONG! WE CAN'T PUT IT HERE!
 
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//Settings initialization stuff 
@@ -41,39 +38,35 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033", EFilterType.TYPE_FLOAT));
 		
 		
+
 		
-		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of bloodpool alpha multiplier", "0.0002", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of bloodpool alpha multiplier", "0.03", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
 			
-		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Minimum limit for random change of wall splatter alpha multiplier", "0.0001", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Max upper limit for random change of wall splatter alpha multiplier", "0.02", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 		
-		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Minimum limit for random change of wall splatter alpha test", "0.0001", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Max upper limit for random change of wall splatter alpha test", "0.02", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 	
 			
-		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Max Alpha Multiplier limit", "5", EFilterType.TYPE_FLOAT));			//max 5
-		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Minimum Alpha Test", "0.1", EFilterType.TYPE_FLOAT));
+		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha test maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
+		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha test minimum value", "0.1", EFilterType.TYPE_FLOAT));
+		
+		ablVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static decal to appear", "50.0", EFilterType.TYPE_FLOAT));
 
 	
 			
 		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2", EFilterType.TYPE_INT));
 		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6", EFilterType.TYPE_INT));
-		//ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0"));
 			
 		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
 		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
-			
-			
 
-		//ablVariablesMap.Set("diffOriginX", new VariableInfo("Diff Origin X (TEST)", "0"));
-		//ablVariablesMap.Set("diffOriginY", new VariableInfo("Diff Origin Y (TEST)", "0"));
-			//ablVariablesMap.Set("diffOriginZ", new VariableInfo("Diff Origin Z (TEST)", "0"));
-			//ablVariablesMap.Set("decalAngle", new VariableInfo("Decal Angle", "0"));
-			//ablVariablesMap.Set("nearClip", new VariableInfo("Near Clip (TEST)", "0"));
-			//ablVariablesMap.Set("farClip", new VariableInfo("Far Clip (TEST)", "2"));
-			
-			
+		
+		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
+
+		
 		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
 			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
 		else if (!ablSettings)
@@ -83,7 +76,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		}
 				
 		
-			//////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		
 	}
@@ -108,11 +101,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
 		
 			
-			//Setup AnimatedDecalManager
-			ABL_AnimatedDecalManager animatedDecalManager;		
-			animatedDecalManager = ABL_AnimatedDecalManager.GetInstance();		
-			if (!animatedDecalManager)
-				animatedDecalManager = ABL_AnimatedDecalManager.Cast(GetGame().SpawnEntity(ABL_AnimatedDecalManager, GetGame().GetWorld(), null));
+			//Setup animatedBloodManager
+			ABL_AnimateBloodManager animatedBloodManager;		
+			animatedBloodManager = ABL_AnimateBloodManager.GetInstance();		
+			if (!animatedBloodManager)
+				animatedBloodManager = ABL_AnimateBloodManager.Cast(GetGame().SpawnEntity(ABL_AnimateBloodManager, GetGame().GetWorld(), null));
 				
 			
 			ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
@@ -134,17 +127,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				
 				if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 				{
-					GetGame().GetCallqueue().CallLater(animatedDecalManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
-					
-					
-					// call another method to manage particles 
-					
+					GetGame().GetCallqueue().CallLater(animatedBloodManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
 					alreadyDestroyed = true;		//only once
 				}
 				else if (damage > 20.0)
 				{
 					//todo add a timer to prevent more than 1 splatter on the wall 
-					animatedDecalManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
+					animatedBloodManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
 					
 
 					//spawns particles 
@@ -153,10 +142,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 					
 				}
 			
-	
-				//GenerateWeaponSplatters(currentCharacter, ablSettings);
-				//if (Math.RandomInt(0,21) > 10)		//todo make it customizable
-				//	animatedDecalManager.SpawnSingleFrame(currentCharacter, worldTmp, hitTransform[0], hitTransform[1]);
+				
+				GenerateWeaponSplatters(currentCharacter, ablSettings);
+				float chanceStaticDecal = ablSettings.Get("chanceStaticDecal").ToFloat();
+				if (Math.RandomInt(0,101) < chanceStaticDecal)		
+					animatedBloodManager.SpawnSingleFrame(currentCharacter, world, hitTransform[0], hitTransform[1]);
 	
 				
 			}
@@ -231,7 +221,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			Decal tmpDecal = tmpWrapper.wrappedDecal;
 			if (tmpDecal)
 			{
-				worldTmp.RemoveDecal(tmpDecal);
+				world.RemoveDecal(tmpDecal);
 				stack.Remove(index);
 			}
 
@@ -255,7 +245,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			vector origin = owner.CoordToParent(tmpTransformHand);
 			vector projection = origin;
 
-			DecalWrapper newTmpWrapperLeft = DecalWrapper(worldTmp.CreateDecal(owner, origin, projection, nearClip, farClip, 0, 1, 1, weaponSplatterMaterial, -1, materialColor));
+			DecalWrapper newTmpWrapperLeft = DecalWrapper(world.CreateDecal(owner, origin, projection, nearClip, farClip, 0, 1, 1, weaponSplatterMaterial, -1, materialColor));
 			stack.Insert(newTmpWrapperLeft);
 			if(debugSpheres)
 				MCF_Debug.DrawSphereAtPos(origin, COLOR_RED);
