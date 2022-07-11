@@ -228,6 +228,10 @@ class BS_AnimateBloodManager : GenericEntity
 			{
 
 				traceParam = GetSurfaceIntersection(character, m_world, hitPosition, hitDirection, distance, traceFlags, intersectionPosition);
+				
+				if (traceParam.TraceEnt == null)
+					return;
+				
 				angle = 0;
 				origin = intersectionPosition - hitDirection * (2.0 / 4);
 					
