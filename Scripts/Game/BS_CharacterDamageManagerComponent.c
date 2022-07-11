@@ -9,8 +9,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	IEntity currentCharacter;
 	bool alreadyDestroyed = false;
 	float timerBetweenSplatters; 
-	
-	
 	World world;
 
 	
@@ -23,7 +21,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		currentCharacter = owner;
 		world = owner.GetWorld();
 		
-		
 		currentCharacterDecals = new ref array<ref DecalWrapper>();
 		
 		if (!currentPlayerDecals)
@@ -35,10 +32,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
 		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
 				
-		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_FLOAT));
 		
-		
-
 		
 		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
@@ -50,21 +46,21 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		bsVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 	
 			
-		bsVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha test maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
-		bsVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha test minimum value", "0.1", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha Test Maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
+		bsVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha Test Minimum value", "0.1", EFilterType.TYPE_FLOAT));
 		
-		bsVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static decal to appear", "50.0", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static blood decal to appear (0 to 100)", "50", EFilterType.TYPE_FLOAT));
 
 	
 			
 		bsVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2", EFilterType.TYPE_INT));
-		bsVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6", EFilterType.TYPE_INT));
+		bsVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "4", EFilterType.TYPE_INT));
 			
 		bsVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
 
 		
-		bsVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
+		//bsVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
 
 		
 		if (!BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID))
@@ -110,15 +106,10 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			
 			bsSettings = MCF_SettingsManager.GetInstance().GetModSettings(BS_MOD_ID);
 	
-			
-			//Useless
-			vector _tmpVec[4];
-			int _correctBoneId;
-			//Useless
-			
+
 			int correctNodeId;
 			int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
-			pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, _tmpVec, _correctBoneId, correctNodeId);
+			pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
 			
 	
 			
@@ -134,16 +125,15 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				{
 					//todo add a timer to prevent more than 1 splatter on the wall 
 					animatedBloodManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
-					
-
-					//spawns particles 
-					
-					
+	
 					
 				}
 			
+				int enableWeaponSplatters = bsSettings.Get("enableWeaponSplatters").ToInt();
 				
-				GenerateWeaponSplatters(currentCharacter, bsSettings);
+				if (enableWeaponSplatters == 1)
+					GenerateWeaponSplatters(currentCharacter, bsSettings);
+				
 				float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
 				if (Math.RandomInt(0,101) < chanceStaticDecal)		
 					animatedBloodManager.SpawnSingleFrame(currentCharacter, world, hitTransform[0], hitTransform[1]);
@@ -151,21 +141,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				
 			}
 		}
-	}
-	
-
-	
-	void GenerateBloodParticleEmitter(vector position[3])
-	{
-			
-		//SCR_ParticleEmitter particleEmitter = SCR_ParticleAPI.PlayOnObjectPTC(GetOwner(), m_sBleedingParticle, vector.Zero, vector.Zero, boneNode);
-		//SCR_ParticleAPI.LerpAllEmitters(particleEmitter, bleedingRate * m_fBleedingParticleRateScale, EmitterParam.BIRTH_RATE);
-		
-		//if (!m_mBleedingParticles)
-		//	m_mBleedingParticles = new map<HitZone, SCR_ParticleEmitter>;
-		
-		//m_mBleedingParticles.Insert(hitZone, particleEmitter);
-	
 	}
 	
 	
@@ -202,11 +177,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 
 
-	
-	
-	
-	
-	
 	
 	void ManageWeaponDecalsStack(IEntity owner, array<ref DecalWrapper> stack, float nearClip, float farClip, int maxDecals, bool debugSpheres = false)
 	{
@@ -330,69 +300,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	
 
 }
-
-
-
-
-
-
-
-
-class TestClass
-{
-
-	// generate perlin noise 
-	
-	// write it to edds file... ttttttthat we don't have any idea how to do it 
-	
-	//  register it
-		//class GeneratedResources
-	//{
-	//	proto bool RegisterResource(string absPath, out ResourceName resourceName);
-	//
-	//	private void GeneratedResources();
-	//	private void ~GeneratedResources();
-	//}
-
-	// read it
-	
-	/*
-		// ! saves perlin in an image for debug purposes
-	void PerlinDebug()
-	{
-			string filePath = "d:\\test.dds";
-			ref array<int> data = new array<int>;
-		
-			const int WIDTH = 1024;
-			const int HEIGHT = 1024;
-		
-			for (int y = 0; y < HEIGHT; y++) for (int x = 0; x < WIDTH; x++)
-			{
-				int count = x * y;
-			
-				float perlinVal = Math.PerlinNoise(x/m_fPerlinFrequency, y/m_fPerlinFrequency);
-				//Print(perlinVal);
-					
-				int pixel = ARGB(255, perlinVal * 255, perlinVal * 255, perlinVal * 255 );
-				data.Insert(pixel);
-			}
-
-			// save dds to file
-			if (TexTools.SaveImageData(filePath, WIDTH, HEIGHT, data) == false)
-			{
-				//Print("Can't save image", LogLevel.ERROR);
-				return;
-			}
-	}
-	*/		
-	
-	//FUCK YOU FOUND YOU FUCK YOU
-
-	//delete it... jesus what a shitshow
-}
-
-
-
 
 
 class DecalWrapper

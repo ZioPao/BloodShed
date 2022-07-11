@@ -1,0 +1,12 @@
+MatPBRDecal {
+ Color 0.264 0.003 0.003 1
+ AlphaTest 0.91
+ AlphaMul 5
+ BlendMode AlphaBlend
+ BCRMap "{8A8DB30A34B5893F}materials/ground_splatter/BCR/002.edds"
+ OpacityMap "{ADE66D7CC390BAEF}materials/ground_splatter/OPA/002.edds"
+ NormalPower 1.149
+ NMOMap "{AB7DB6E4EC185B42}materials/ground_splatter/NMO/002.edds"
+ GBufferNormal 1
+ NormalCombinePower 3.404
+}
