@@ -1,7 +1,7 @@
 GameProject {
- ID "AnimatedBloodlust"
+ ID "Bloodshed"
  GUID "59951797A291CA02"
- TITLE "Animated Bloodlust"
+ TITLE "Bloodshed"
  Dependencies {
   "58D0FB3206B6F859" "597CD68C9541DE3A" "598F0A469787E00F" "596CE5149F3F702A"
  }

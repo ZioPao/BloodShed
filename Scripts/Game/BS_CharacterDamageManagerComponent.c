@@ -1,9 +1,9 @@
 modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponent
 {
-	ref map<string, string> ablSettings;
+	ref map<string, string> bsSettings;
 	
-	const string ABL_FileNameJson = "ABL_Settings.json";
-	const string ABL_MOD_ID = "59951797A291CA02";				//it's probably possible to get this in a better way but ok
+	const string BS_FileNameJson = "BS_Settings.json";
+	const string BS_MOD_ID = "59951797A291CA02";				
 	const ResourceName weaponSplatterMaterial = "{098960A4823D679F}materials/weapon_splatter/WeaponBlood.emat";
 
 	IEntity currentCharacter;
@@ -32,47 +32,47 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 		////////////////////////////////////////////////////////////////////////////////////////////////
 		//Settings initialization stuff 
-		MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-		OrderedVariablesMap ablVariablesMap = new OrderedVariablesMap();
+		MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
+		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
 				
-		ablVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait Times between frames (in seconds)", "0.033", EFilterType.TYPE_FLOAT));
 		
 		
 
 		
-		ablVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
 			
-		ablVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("wallsplatterMinimumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("wallsplatterMaximumAlphaMulChange", new VariableInfo("Alpha Mul Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 		
-		ablVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("wallsplatterMinimumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Min Random Change", "0.0001", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 	
 			
-		ablVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha test maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
-		ablVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha test minimum value", "0.1", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha test maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
+		bsVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha test minimum value", "0.1", EFilterType.TYPE_FLOAT));
 		
-		ablVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static decal to appear", "50.0", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static decal to appear", "50.0", EFilterType.TYPE_FLOAT));
 
 	
 			
-		ablVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2", EFilterType.TYPE_INT));
-		ablVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6", EFilterType.TYPE_INT));
+		bsVariablesMap.Set("maxDecalsPerChar", new VariableInfo("Max Decals per Character", "2", EFilterType.TYPE_INT));
+		bsVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "6", EFilterType.TYPE_INT));
 			
-		ablVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
-		ablVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
 
 		
-		ablVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
 
 		
-		if (!ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID))
-			ablSettings = ABL_mcfSettingsManager.Setup(ABL_MOD_ID, ABL_FileNameJson, ablVariablesMap);
-		else if (!ablSettings)
+		if (!BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID))
+			bsSettings = BS_mcfSettingsManager.Setup(BS_MOD_ID, BS_FileNameJson, bsVariablesMap);
+		else if (!bsSettings)
 		{
-			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
-			ABL_mcfSettingsManager.GetJsonManager(ABL_MOD_ID).SetUserHelpers(ablVariablesMap);		
+			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
+			BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID).SetUserHelpers(bsVariablesMap);		
 		}
 				
 		
@@ -97,18 +97,18 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 		if (MCF_SettingsManager.IsInitialized())
 		{
-			MCF_SettingsManager ABL_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-			ablSettings = ABL_mcfSettingsManager.GetModSettings(ABL_MOD_ID);
+			MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
+			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
 		
 			
 			//Setup animatedBloodManager
-			ABL_AnimateBloodManager animatedBloodManager;		
-			animatedBloodManager = ABL_AnimateBloodManager.GetInstance();		
+			BS_AnimateBloodManager animatedBloodManager;		
+			animatedBloodManager = BS_AnimateBloodManager.GetInstance();		
 			if (!animatedBloodManager)
-				animatedBloodManager = ABL_AnimateBloodManager.Cast(GetGame().SpawnEntity(ABL_AnimateBloodManager, GetGame().GetWorld(), null));
+				animatedBloodManager = BS_AnimateBloodManager.Cast(GetGame().SpawnEntity(BS_AnimateBloodManager, GetGame().GetWorld(), null));
 				
 			
-			ablSettings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
+			bsSettings = MCF_SettingsManager.GetInstance().GetModSettings(BS_MOD_ID);
 	
 			
 			//Useless
@@ -143,8 +143,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				}
 			
 				
-				GenerateWeaponSplatters(currentCharacter, ablSettings);
-				float chanceStaticDecal = ablSettings.Get("chanceStaticDecal").ToFloat();
+				GenerateWeaponSplatters(currentCharacter, bsSettings);
+				float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
 				if (Math.RandomInt(0,101) < chanceStaticDecal)		
 					animatedBloodManager.SpawnSingleFrame(currentCharacter, world, hitTransform[0], hitTransform[1]);
 	
@@ -173,13 +173,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		
 		// Settings
-		float farClip = ablSettings.Get("farClip").ToFloat();
-		float nearClip = ablSettings.Get("nearClip").ToFloat();
-		int maxDecalsPlayerWeapon = ablSettings.Get("maxDecalsPlayerWeapon").ToInt();	
+		float farClip = bsSettings.Get("farClip").ToFloat();
+		float nearClip = bsSettings.Get("nearClip").ToFloat();
+		int maxDecalsPlayerWeapon = bsSettings.Get("maxDecalsPlayerWeapon").ToInt();	
 		bool debugSpheres = 0;			//settings.Get("debugSpheres").ToInt();
 		
 		// Other characters 
-		int maxDecalsPerChar = ablSettings.Get("maxDecalsPerChar").ToInt();
+		int maxDecalsPerChar = bsSettings.Get("maxDecalsPerChar").ToInt();
 		ManageWeaponDecalsStack(currentChar, currentCharacterDecals, 0, 2, maxDecalsPerChar);
 
 		// Player Weapon
