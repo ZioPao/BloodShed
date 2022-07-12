@@ -243,6 +243,7 @@ class BS_AnimateBloodManager : GenericEntity
 		float size = 1;
 		float alphaTestValue;		//default
 		float alphaMulValue = 1;			//default starting point of mul
+		settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
 
 		switch(type)
 		{
