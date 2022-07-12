@@ -6,7 +6,7 @@ EffectDef {
    BirthRate 0.25
    BirthRateRND 1
    Offset 0 0 0
-   Material "{0B81C3C8F4C5861F}materials/dripping_particles/blood_drip.emat"
+   Material "{19986A9846B847A6}Materials/Particles/blood_drip.emat"
    Prefab "{29FBEC1991810EEF}system/wbdata/ParticleEditor/defaultPrefab.et"
    SizeMultiplier 0.08
    SizeRND 0.05
