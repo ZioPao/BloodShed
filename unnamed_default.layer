@@ -1,0 +1,8 @@
+$grp SCR_ChimeraCharacter : "{E398E44759DA1A43}Prefabs/Characters/Factions/BLUFOR/US_Army/Character_US_TL.et" {
+ {
+  coords 15.377 1.001 11.867
+ }
+ {
+  coords 16.353 1.001 12.283
+ }
+}

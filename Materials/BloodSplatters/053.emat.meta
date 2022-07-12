@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3651E1E9FF9F8A6C}Materials/BloodSplatters/053.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

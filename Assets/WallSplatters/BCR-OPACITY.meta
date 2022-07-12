@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E5A1BABAD06E13A2}Assets/WallSplatters/BCR-OPACITY"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}
