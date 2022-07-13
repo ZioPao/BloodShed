@@ -14,7 +14,7 @@ modded class SCR_PlayerController : PlayerController
 	void CleanWeaponCallback()
 	{
 		Print("Squeeky clean");
-		BS_AnimateBloodManager.CleanWeapon();
+		BS_AnimatedBloodManager.CleanWeapon();
 	}
 
 

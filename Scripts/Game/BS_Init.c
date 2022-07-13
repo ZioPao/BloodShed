@@ -8,10 +8,10 @@ modded class SCR_BaseGameMode : BaseGameMode
 		super.StartGameMode();
 					
 		//Setup animatedBloodManager
-		BS_AnimateBloodManager animatedBloodManager;		
-		animatedBloodManager = BS_AnimateBloodManager.GetInstance();		
+		BS_AnimatedBloodManager animatedBloodManager;		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
 		if (!animatedBloodManager)
-			animatedBloodManager = BS_AnimateBloodManager.Cast(GetGame().SpawnEntity(BS_AnimateBloodManager, GetGame().GetWorld(), null));
+			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
 				
 
 		

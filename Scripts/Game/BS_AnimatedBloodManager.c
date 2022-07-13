@@ -1,7 +1,7 @@
-class BS_AnimateBloodManagerClass : GenericEntityClass
+class BS_AnimatedBloodManagerClass : GenericEntityClass
 {}
 
-class BS_AnimateBloodManager : GenericEntity
+class BS_AnimatedBloodManager : GenericEntity
 {
 	
 	static ref map<EDecalType, ref array<ResourceName>> materialsMap;
@@ -29,21 +29,21 @@ class BS_AnimateBloodManager : GenericEntity
 	const float farClip = 5;
 	
 	
-	static BS_AnimateBloodManager instance;
+	static BS_AnimatedBloodManager instance;
 
 	ref array<Material> bloodsplattersLoaded;
 	ref array<Material> wallsplattersLoaded;
 	
 
 
-	static BS_AnimateBloodManager GetInstance()
+	static BS_AnimatedBloodManager GetInstance()
 	{
 		return instance;
 	}
 
 	
 	
-	void BS_AnimateBloodManager(IEntitySource src, IEntity parent)
+	void BS_AnimatedBloodManager(IEntitySource src, IEntity parent)
 	{
 
 		SetEventMask(EntityEvent.INIT | EntityEvent.FRAME);
@@ -386,7 +386,8 @@ class BS_AnimateBloodManager : GenericEntity
 			//todo make this constant
 			float maxAlphaMul = 5;				
 			float minAlphaTest = 0.1;
-			
+			settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
+
 			if (dMaterialInfo.alphaMul < maxAlphaMul)
 			{
 				if (d)

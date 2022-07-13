@@ -82,10 +82,10 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 		
 
-		BS_AnimateBloodManager animatedBloodManager;		
-		animatedBloodManager = BS_AnimateBloodManager.GetInstance();		
+		BS_AnimatedBloodManager animatedBloodManager;		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
 		if (!animatedBloodManager)
-			animatedBloodManager = BS_AnimateBloodManager.Cast(GetGame().SpawnEntity(BS_AnimateBloodManager, GetGame().GetWorld(), null));
+			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
 				
 
 		int correctNodeId;
