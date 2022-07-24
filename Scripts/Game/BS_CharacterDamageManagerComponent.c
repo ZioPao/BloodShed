@@ -23,7 +23,6 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 		
 		////////////////////////////////////////////////////////////////////////////////
-		MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
 		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
 		
 		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
@@ -53,15 +52,15 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		bsVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));	
 	
-		if (!BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID))
+		if (!MCF_SettingsManager.GetJsonManager(BS_MOD_ID))
 		{
-			BS_mcfSettingsManager.Setup(BS_MOD_ID, BS_FileNameJson, bsVariablesMap);
+			MCF_SettingsManager.Setup(BS_MOD_ID, BS_FileNameJson, bsVariablesMap);
 		
 		}
 		else if (!bsSettings)
 		{
-			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
-			BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID).SetUserHelpers(bsVariablesMap);		
+			bsSettings = MCF_SettingsManager.GetModSettings(BS_MOD_ID);
+			MCF_SettingsManager.GetJsonManager(BS_MOD_ID).SetUserHelpers(bsVariablesMap);		
 		}
 		
 		
@@ -98,27 +97,31 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		{
 				
 
+			
 			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
-				GetGame().GetCallqueue().CallLater(animatedBloodManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
+				
+				
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
 				alreadyDestroyed = true;		//only once
 			}
-			else if (damage > 20.0)
+			else if (damage > 15.0)
 			{
-				animatedBloodManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
+				animatedBloodManager.SpwanWallSplatter(currentCharacter,  hitTransform[0],  hitTransform[1]);
 		
 			}
-			MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
+			
+			bsSettings = MCF_SettingsManager.GetModSettings(BS_MOD_ID);
 			int enableWeaponSplatters = bsSettings.Get("enableWeaponSplatters").ToInt();
 				
 			if (enableWeaponSplatters == 1)
 				animatedBloodManager.GenerateWeaponSplatters(currentCharacter);
+			
 				
 			float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
 			if (Math.RandomInt(0,101) < chanceStaticDecal)		
-				animatedBloodManager.SpawnSingleFrame(currentCharacter, world, hitTransform[0], hitTransform[1]);
-	
+				animatedBloodManager.SpawnGenericSplatter(currentCharacter, hitTransform[0], hitTransform[1]);
+			
 				
 		}
 		

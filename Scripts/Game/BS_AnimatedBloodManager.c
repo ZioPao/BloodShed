@@ -19,14 +19,11 @@ class BS_AnimatedBloodManager : GenericEntity
 
 	
 	
-	private World m_world;
+	private World world;
 	int materialColor;	//todo make this dynamic 
 	float waitTimeBetweenFrames;
 	float currentTime;
 
-	
-	const float nearClip = 0.0;
-	const float farClip = 5;
 	
 	
 	static BS_AnimatedBloodManager instance;
@@ -120,7 +117,7 @@ class BS_AnimatedBloodManager : GenericEntity
 
 		instance = this;
 
-		
+		MCF_Debug.dbgShapes = new array<ref Shape>();
 		
 	}
 
@@ -128,9 +125,9 @@ class BS_AnimatedBloodManager : GenericEntity
 	{
 		super.EOnInit(owner);
 		//Allocate it whenever called. When called, let's start. 
-		m_world = GetGame().GetWorld();
-		materialColor = Color.FromRGBA(128, 0, 0,255).PackToInt();		//move this away
-		
+		world = GetGame().GetWorld();
+		materialColor = Color.FromRGBA(128, 0, 0, 255).PackToInt();
+
 				
 		currentCharacterDecals = new ref array<ref DecalWrapper>();
 		
@@ -151,10 +148,13 @@ class BS_AnimatedBloodManager : GenericEntity
 			
 			if (currentTime > waitTimeBetweenFrames)
 			{
-				SpawnAnimatedFrames();
+				AnimateDecal();
+				
+				
+				
+				
 				currentTime = 0;
-				settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
-
+				settings = MCF_SettingsManager.GetModSettings(ABL_MOD_ID);
 				waitTimeBetweenFrames = 0.033;
 
 			}
@@ -171,248 +171,286 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	
 	
-	void SpawnSingleFrame(IEntity character, World world, vector hitPosition, vector hitDirection)
-
-	{
-		
-		
-		array<ResourceName> resources = materialsMap.Get(EDecalType.SINGLE_FRAME_GENERIC_SPLATTER);
-		int randomIndex = Math.RandomIntInclusive(0, resources.Count() - 1);
-		ResourceName material = resources[randomIndex];
-		
-		vector intersectionPosition;
-		vector mat[4];
-		float distance = 2.0;
-		TraceParam traceParam;
-		vector origin;
-		vector projection;
-		
-		
-		
-		vector correctedDirection = hitDirection;
-		correctedDirection[1] = correctedDirection[1] - 1.5;
-		
-		//Print(hitPosition);
-		//Print(correctedDirection);
-		
-		
-		traceParam = GetSurfaceIntersection(character, world, hitPosition, correctedDirection, distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
-			
-		
-		//this is wrong. we don't want to origin, we want the point of impact.
-		origin = hitPosition + Vector(0, 2.0 / 4, 0);	
-		projection = vector.Lerp(-traceParam.TraceNorm, correctedDirection, 0.2);
-
-		if (traceParam.TraceEnt) // spawn splatter 
-		{			
-			float angle = Math.RandomFloatInclusive(-360, 360);
-			float size = Math.RandomFloatInclusive(0.2, 0.8);
-
-			Decal tmpDecal = world.CreateDecal(traceParam.TraceEnt, origin, projection, 0, 2, angle, size, 1, material, -1, Color.FromRGBA(128, 0, 0,255).PackToInt());
-
-		}
-	}
 	
-	//void SetupNewAnimation(int index, Decal dec, int frames, float rot, vector orig, vector proj, int si)
-	void StartNewAnimation(IEntity character, vector hitPosition, vector hitDirection, EDecalType type, bool terrainOnly, float sizeModifier, int nodeId)
+	
+	void SpawnDecal(TraceParam traceParam, EDecalType type, vector origin, vector projection, float nearClip, float farClip, float angle, float size, float alphaTestValue = -1, float alphaMulValue = -1)
 	{
-		vector intersectionPosition;
-		float distance = 2.0;
-		float angle;
-		TraceParam traceParam;
-		vector origin;
-		vector projection;
-		array<ResourceName> tempFrames = materialsMap.Get(type);
 		
-		
-		int traceFlags;
-		
-		if (terrainOnly)
-			traceFlags = TraceFlags.WORLD;
-		else 
-			traceFlags = TraceFlags.WORLD | TraceFlags.ENTS;
-		
+		array<ResourceName> refResources = materialsMap.Get(type);
+		int randomMaterialIndex = Math.RandomIntInclusive(0, refResources.Count() - 1);
+		ResourceName materialResource = refResources[randomMaterialIndex];
+		Material material = Material.GetMaterial(materialResource);
+		Decal decal;
 
-		//TEST differnet origin 
-		vector mat[4];
-			
-        // Setup variables here
-		Material tmp;
-        ResourceName chosenResource;
-		int indexAlpha = -1;
-		float size = 1;
-		float alphaTestValue;		//default
-		float alphaMulValue = 1;			//default starting point of mul
-		settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
-
-		switch(type)
-		{
-			
-			case EDecalType.BLOODPOOL:
-			{
-					
-				if (character.GetBoneMatrix(nodeId, mat))
-				{
-					traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, traceFlags, intersectionPosition);
-					vector pos = character.CoordToParent(mat[3]);
-					pos[2] = pos[2];//+ 0.5;
-					origin = pos;
-					projection = -traceParam.TraceNorm;
-					
-					angle = 0;		//SelectBloodpoolAngle(origin);
-					indexAlpha = Math.RandomIntInclusive(0, materialsMap.Get(EDecalType.BLOODPOOL).Count() - 1);			//todo make this dynamic
-				    chosenResource = tempFrames[indexAlpha];
-					size = settings.Get("bloodpoolSize").ToFloat();
-					alphaMulValue = 0.55;
-					alphaTestValue = 0.670;		//shouldn't decrease.
-
-				}
-				else 
-				{
-					//cant find bone, should never happen?
-					
-					//happens with grenades
-					traceParam = GetSurfaceIntersection(character, m_world, hitPosition, Vector(0, -1, 0), distance, traceFlags, intersectionPosition);
-
-					origin = character.GetOrigin() + Vector(0, 2.0 / 4, 0);			
-		 			projection = vector.Lerp(-traceParam.TraceNorm, hitDirection, 0.5);
-				}
-			
-				break;
-			}
-			case EDecalType.WALLSPLATTER:
-			{
-
-				traceParam = GetSurfaceIntersection(character, m_world, hitPosition, hitDirection, distance, traceFlags, intersectionPosition);
-				
-				if (traceParam.TraceEnt == null)
-					return;
-				
-				angle = 0;
-				origin = intersectionPosition - hitDirection * (2.0 / 4);
-					
-				float xProjection;
-				float yProjection;
-				float zProjection;
-				if (hitDirection[0] < 0)
-					xProjection = -0.1;
-				else
-					xProjection = 0.1;
-					
-				yProjection = 0.02;
-					
-				if (hitDirection[2] < 0)
-					zProjection = -1;
-				else
-					zProjection = 1;
-				
-				projection = {xProjection, yProjection, zProjection};
-				
-				
-				
-				indexAlpha = Math.RandomIntInclusive(0, materialsMap.Get(EDecalType.WALLSPLATTER).Count() - 1);			//todo make this dynamic
-
-				
-				
-                chosenResource = tempFrames[indexAlpha];
-				alphaMulValue = 1.4;
-				alphaTestValue = 3;			//starting point
-
-				size = settings.Get("wallsplatterSize").ToFloat();
-				
-				
-				//Spawns some particles from the zone
-				SCR_ParticleEmitter particleEmitter = SCR_ParticleAPI.PlayOnPositionPTC("{446AF7846B0B9B65}Particles/blood_drip_from_wall.ptc", intersectionPosition);
-
-				break;
-			}
-			
-			
-		}
 
 		if (traceParam.TraceEnt) 
 		{			
-            tmp = Material.GetMaterial(chosenResource);
-		    Decal tmpDecal = m_world.CreateDecal(traceParam.TraceEnt, origin, projection, nearClip, farClip, angle, size, 1, chosenResource, -1, materialColor);
+		    decal = world.CreateDecal(traceParam.TraceEnt, origin, projection, nearClip, farClip, angle, size, 1, materialResource, -1, materialColor);
 
 
 			// try to insert it into the decalsSpawned map 
 			int index = Math.RandomInt(-10000, 10000);
+			
+			//todo really inefficient
 			while(decalsSpawned.Get(index))
 				index = Math.RandomInt(-10000, 10000);
 
-
-
-            DecalBaseInfo decalBaseInfo = new DecalBaseInfo(tmpDecal, type, 0, size, angle, 1);
-            DecalPositionInfo decalPositionInfo = new DecalPositionInfo(traceParam, hitPosition, hitDirection, origin, projection);
+	
+		// SIZE IS SET TO 1 HERE BECAUSE REFORGER IS AN ASSHOLE
+            DecalBaseInfo decalBaseInfo = new DecalBaseInfo(decal, type, 0, 1, angle, 1);
+            DecalPositionInfo decalPositionInfo = new DecalPositionInfo(traceParam, origin, projection);
 			MaterialInfo materialInfo = new MaterialInfo(alphaMulValue, alphaTestValue);      //todo need to see the og values.... set them over here, this is wrong for now
 
-            if (indexAlpha != -1)
-			{
+			if (alphaTestValue > 0)	
+				material.SetParam("AlphaTest",alphaTestValue);
+			
+			if (alphaMulValue > 0)
+				material.SetParam("AlphaMul", alphaMulValue);
 				
-				//Print("Reset Alpha Values for " + chosenResource);
-				tmp.SetParam("AlphaTest",alphaTestValue);
-				tmp.SetParam("AlphaMul", alphaMulValue);
-				
-           	 	materialInfo.SetIndexAlphaMap(indexAlpha);
+           	materialInfo.SetIndexAlphaMap(randomMaterialIndex);
 
-			}
+		
 			
             DecalInformation decalInformation = new DecalInformation(decalBaseInfo, decalPositionInfo, materialInfo);
-			
-			
+			if (type != EDecalType.SINGLE_FRAME_GENERIC_SPLATTER)
+			{
+				decalsSpawned.Insert(index, decalInformation);	
 
-			decalsSpawned.Insert(index, decalInformation);	
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	// it's rewrite time 
+	
+	
+	void SpwanWallSplatter(IEntity character, vector hitPosition, vector hitDirection)
+	{
+		Print("Generating WallSplatter");
+		
+		// Basic variables 
+		int randomMaterialIndex;
+		array<string> refResources;
+		ResourceName material;
+		
+		float distance = 2.0;
+		float nearClip = 0;
+		float farClip = 2.0;
+		float angle;
+		float size;
+		float alphaMulValue = 1.4;
+		float alphaTestValue = 3;			//starting point
+		int color;
+		
+		TraceParam traceParam;
+		vector origin;
+		vector projection;
+		vector intersectionPosition;
+		vector correctedDirection;
+		
+		
+		
+
+
+		// Check intersection and setup vectors
+		traceParam = GetSurfaceIntersection(character, world, hitPosition, hitDirection, distance, TraceFlags.ENTS, intersectionPosition);
+		origin = intersectionPosition - hitDirection * (2.0 / 4);
+					
+		float xProjection;
+		float yProjection;
+		float zProjection;
+		if (hitDirection[0] < 0)
+			xProjection = -0.1;
+		else
+			xProjection = 0.1;
+					
+		yProjection = 0.02;
+					
+		if (hitDirection[2] < 0)
+			zProjection = -1;
+		else
+			zProjection = 1;
+				
+		projection = {xProjection, yProjection, zProjection};
+
+		
+		if (traceParam.TraceEnt)
+		{
+			//angle = Math.RandomFloatInclusive(-360, 360);
+			size = Math.RandomFloatInclusive(0.2, 0.8);
+			color = Color.FromRGBA(128, 0, 0, 255).PackToInt();
+			
+			SpawnDecal(traceParam,EDecalType.WALLSPLATTER, origin, projection, nearClip, farClip, angle, size, alphaTestValue, alphaMulValue);
+		
 		}
 
 	}
 	
 	
-	void SpawnAnimatedFrames()
-	{
-		float distance = 2.0;
 
-		foreach(int index, DecalInformation dInfo  : decalsSpawned)
+	
+	
+	
+	/* Really similiar to wallsplatter but more generic*/
+	void SpawnGenericSplatter(IEntity character, vector hitPosition, vector hitDirection)
+	{
+		// Basic variables 
+		int randomMaterialIndex;
+		array<string> refResources;
+		ResourceName material;
+		
+		float distance = 2.0;
+		float nearClip = 0;
+		float farClip = 2.0;
+		float angle;
+		float size;
+		int color;
+		
+		TraceParam traceParam;
+		vector origin;
+		vector projection;
+		vector intersectionPosition;
+		vector correctedDirection;
+
+
+		// Fix up some stuff 
+		correctedDirection = hitDirection;
+		correctedDirection[1] = correctedDirection[1] - 1.5;		// to prevent them from being upside down 
+		
+		// Check intersection and setup vectors
+		traceParam = GetSurfaceIntersection(character, world, hitPosition, correctedDirection, distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
+		origin = hitPosition + Vector(0, 2.0 / 4, 0);	
+		projection = vector.Lerp(-traceParam.TraceNorm, correctedDirection, 0.2);
+		
+		
+		if (traceParam.TraceEnt)
 		{
-            DecalBaseInfo dBaseInfo = dInfo.decalBaseInfo;
+			//angle = Math.RandomFloatInclusive(-360, 360);
+			size = Math.RandomFloatInclusive(0.2, 0.8);
+			color = Color.FromRGBA(128, 0, 0, 255).PackToInt();
+			
+			SpawnDecal(traceParam,EDecalType.SINGLE_FRAME_GENERIC_SPLATTER, origin, projection, nearClip, farClip, angle, size);
+		
+		}
+
+	}
+	
+	
+	
+	void SpawnGroundBloodpool(IEntity character, vector hitPosition, vector hitDirection, int nodeId)
+	{
+		
+		// Basic variables 
+		int randomMaterialIndex;
+		array<string> refResources;
+		ResourceName materialResourceName;
+		Material material;
+		
+		float distance = 2.0;
+		float nearClip = 0;
+		float farClip = 2.0;
+		float angle;
+		float size;
+		float alphaMulValue = 0.55;
+		float alphaTestValue = 0.670;		//shouldn't decrease.
+		int color;
+		
+		TraceParam traceParam;
+		vector origin;
+		vector projection;
+		vector intersectionPosition;
+		vector correctedDirection;
+		
+		
+		vector characterBoneMatrix[4];
+		vector correctedHitPosition; 
+		
+		//Get a random blood pool and variables from settings
+		size = settings.Get("bloodpoolSize").ToFloat();
+	
+		
+		// Check intersection and setup vectors
+		traceParam = GetSurfaceIntersection(character, world, hitPosition, Vector(0, -1, 0), distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
+		
+		
+		// Get Bone Matrix. If it's false, it's because of explosions or stuff like that
+		if (character.GetBoneMatrix(nodeId, characterBoneMatrix))
+		{
+
+			correctedHitPosition = character.CoordToParent(characterBoneMatrix[3]);
+	
+			// Correct origin and projection
+			origin = correctedHitPosition;
+			projection = -traceParam.TraceNorm;
+			
+
+
+		}
+		else
+		{
+			origin = character.GetOrigin() + Vector(0, 2.0 / 4, 0);			
+		 	projection = vector.Lerp(-traceParam.TraceNorm, hitDirection, 0.5);
+		}
+		
+		
+		SpawnDecal(traceParam, EDecalType.BLOODPOOL, origin, projection, nearClip, farClip, angle, size, alphaTestValue, alphaMulValue);
+	
+
+		
+
+	}
+
+
+
+	void AnimateDecal()
+	{
+		//Print("Animate Decal");
+	
+	
+		foreach(int index, DecalInformation dInfo : decalsSpawned)
+		{
+			DecalBaseInfo dBaseInfo = dInfo.decalBaseInfo;
             DecalPositionInfo dPositionInfo = dInfo.decalPositionInfo;
             MaterialInfo dMaterialInfo = dInfo.materialInfo;
-
-
+			
 			Decal d = dBaseInfo.decal;
 			int currentFrame = dBaseInfo.currentFrame;
-			array<ResourceName> tempFrames = materialsMap.Get(dBaseInfo.type);
+			
+			array<ResourceName> refResources = materialsMap.Get(dBaseInfo.type);
 			
 			//todo make this constant
 			float maxAlphaMul = 5;				
 			float minAlphaTest = 0.1;
-			settings = MCF_SettingsManager.GetInstance().GetModSettings(ABL_MOD_ID);
+			settings = MCF_SettingsManager.GetModSettings(ABL_MOD_ID);
 
 			if (dMaterialInfo.alphaMul < maxAlphaMul)
 			{
-				if (d)
-					m_world.RemoveDecal(d);
-					
+				
+				// Init temp variables 
+				ResourceName materialResourceName;
+				Material currentMaterial;
 				TraceParam traceParam = dPositionInfo.traceParam;
 				
-				if (traceParam.TraceEnt) // spawn splatter below character
+
+				float modifiedAlphaMul;
+				float modifiedAlphaTest;
+				float minimumAlphaMulChange;
+				float maximumAlphaMulChange;	
+				float minimumAlphaTestChange;
+				float maximumAlphaTestChange;
+					
+				
+				if (d)
+					world.RemoveDecal(d);
+				
+				if (traceParam.TraceEnt)
 				{
-					
-					Material tmp;
-					ResourceName chosenResource;
-					chosenResource = tempFrames[dMaterialInfo.indexAlpha];
-					tmp  = Material.GetMaterial(chosenResource);
-
-
-					float modifiedAlphaMul;
-					float modifiedAlphaTest;
-					
-					
-					float minimumAlphaMulChange;
-					float maximumAlphaMulChange;
-					
-					float minimumAlphaTestChange;
-					float maximumAlphaTestChange;
+					materialResourceName = refResources[dMaterialInfo.indexAlpha];
+					currentMaterial = Material.GetMaterial(materialResourceName);
+					 
 					
 					switch(dBaseInfo.type)
 					{
@@ -420,19 +458,14 @@ class BS_AnimatedBloodManager : GenericEntity
 						{
 							minimumAlphaMulChange = settings.Get("bloodpoolMinimumAlphaMulChange").ToFloat();
 							maximumAlphaMulChange = settings.Get("bloodpoolMaximumAlphaMulChange").ToFloat();
-							
 							minimumAlphaTestChange = 0;
 							maximumAlphaTestChange = 0;
-							
-							
-							
 							break;
 						}
 						case EDecalType.WALLSPLATTER:
 						{
 							minimumAlphaMulChange = settings.Get("wallsplatterMinimumAlphaMulChange").ToFloat();
 							maximumAlphaMulChange = settings.Get("wallsplatterMaximumAlphaMulChange").ToFloat();
-							
 							minimumAlphaTestChange = settings.Get("wallsplatterMinimumAlphaTestChange").ToFloat();
 							maximumAlphaTestChange = settings.Get("wallsplatterMaximumAlphaTestChange").ToFloat();
 							break;
@@ -441,27 +474,22 @@ class BS_AnimatedBloodManager : GenericEntity
 					}
 					
 					modifiedAlphaMul = dMaterialInfo.alphaMul + Math.RandomFloat(minimumAlphaMulChange, maximumAlphaMulChange);
-					tmp.SetParam("AlphaMul", modifiedAlphaMul);
+					currentMaterial.SetParam("AlphaMul", modifiedAlphaMul);
 
 					
 					if (dMaterialInfo.alphaTest > minAlphaTest)
 					{
 						modifiedAlphaTest = dMaterialInfo.alphaTest - Math.RandomFloat(minimumAlphaTestChange, maximumAlphaTestChange);
-						tmp.SetParam("AlphaTest", modifiedAlphaTest);
+						currentMaterial.SetParam("AlphaTest", modifiedAlphaTest);
 
 					}
 					else
 						modifiedAlphaTest = dMaterialInfo.alphaTest;
-					
-					
-					
-					
-					
-					
+			
 					dMaterialInfo.alphaMul = modifiedAlphaMul; 
 					dMaterialInfo.alphaTest = modifiedAlphaTest;
 					
-					Decal newDecal = m_world.CreateDecal(traceParam.TraceEnt, dPositionInfo.originPosition, dPositionInfo.projectionDirection, nearClip, farClip, dBaseInfo.rotation, dBaseInfo.size, 1, chosenResource, -1, materialColor);
+					Decal newDecal = world.CreateDecal(traceParam.TraceEnt, dPositionInfo.originPosition, dPositionInfo.projectionDirection, 0, 2, dBaseInfo.rotation, dBaseInfo.size, 1, materialResourceName, -1, materialColor);
 					
 					dBaseInfo.decal = newDecal;
 					dBaseInfo.currentFrame = currentFrame;
@@ -471,18 +499,12 @@ class BS_AnimatedBloodManager : GenericEntity
 			else
 			{
 				decalsSpawned.Remove(index);
-				GetGame().GetCallqueue().Remove(SpawnAnimatedFrames);
-				
-				
-				
+
 			}
-			
 		}
-	}
-	
-	
-	
-	
+	}	
+				
+
 	float SelectBloodpoolAngle(inout vector origin)
 	{
 		float tmpAngle;
@@ -571,7 +593,7 @@ class BS_AnimatedBloodManager : GenericEntity
 			Decal tmpDecal = tmpWrapper.wrappedDecal;
 			if (tmpDecal)
 			{
-				m_world.RemoveDecal(tmpDecal);
+				world.RemoveDecal(tmpDecal);
 				stack.Remove(index);
 			}
 
@@ -595,7 +617,7 @@ class BS_AnimatedBloodManager : GenericEntity
 			vector origin = owner.CoordToParent(tmpTransformHand);
 			vector projection = origin;
 
-			DecalWrapper newTmpWrapperLeft = DecalWrapper(m_world.CreateDecal(owner, origin, projection, nearClip, farClip, 0, 1, 1, weaponSplatterMaterial, -1, weaponBloodColor));
+			DecalWrapper newTmpWrapperLeft = DecalWrapper(world.CreateDecal(owner, origin, projection, 0, 2, 0, 1, 1, weaponSplatterMaterial, -1, weaponBloodColor));
 			stack.Insert(newTmpWrapperLeft);
 			//if(debugSpheres)
 			//	MCF_Debug.DrawSphereAtPos(origin, COLOR_RED);
@@ -642,14 +664,14 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	
 	// Helpers 
-	static  TraceParam GetSurfaceIntersection(IEntity owner,World world,vector origin,vector direction, float distance, int flags, out vector intersectionPosition)
+	static TraceParam GetSurfaceIntersection(IEntity owner,World m_world,vector origin,vector direction, float distance, int flags, out vector intersectionPosition)
 	{
 		auto param = new TraceParam();
   		param.Start = origin;
   		param.End = origin + direction * distance;
   		param.Flags = flags;
   		param.Exclude = owner;
-		float intersectionDistance = world.TraceMove(param, NULL) * distance;
+		float intersectionDistance = m_world.TraceMove(param, NULL) * distance;
 		intersectionPosition = origin + (direction * intersectionDistance);
 		return param;
 	}
@@ -734,11 +756,10 @@ class DecalPositionInfo
 	vector projectionDirection;
 
 
-    void DecalPositionInfo(TraceParam tf, vector hitPos, vector hitDir, vector originPos, vector projDir)
+    void DecalPositionInfo(TraceParam tf, vector originPos, vector projDir)
     {
         this.traceParam = tf;
-        this.hitPosition = hitPos;
-        this.hitDirection = hitDir;
+
         this.originPosition = originPos;
         this.projectionDirection = projDir;
 
