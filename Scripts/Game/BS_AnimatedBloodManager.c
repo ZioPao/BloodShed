@@ -6,6 +6,7 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	static ref map<EDecalType, ref array<ResourceName>> materialsMap;
 	ref map<int, ref DecalInformation> decalsSpawned;
+	ref map<EntityID, BloodTrailInfo> bloodTrailsInfoMap;
 	
 	ref array<IEntity> bleedingCharacters;
 
@@ -738,6 +739,113 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	
 	
+	void SpawnBloodTrail(IEntity character)
+	{
+		
+		
+		BloodTrailInfo bloodTrailInfo;
+		
+		
+		//sarch in map 
+		
+		bloodTrailInfo = bloodTrailsInfoMap.Get(character.GetID());
+		
+		if (!bloodTrailInfo)
+		{
+			bloodTrailsInfoMap.Insert(character.GetID(), new BloodTrailInfo() );
+			bloodTrailInfo = bloodTrailsInfoMap.Get(character.GetID());
+		
+		}
+		
+		SCR_CharacterDamageManagerComponent charDamageManagerComponent = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
+		SCR_CharacterControllerComponent charControllerComponent = SCR_CharacterControllerComponent.Cast(character.FindComponent(SCR_CharacterControllerComponent));;
+
+		
+		float speed = charControllerComponent.GetDynamicSpeed();
+		bool isBleeding = charDamageManagerComponent.IsDamagedOverTime(EDamageType.BLEEDING);
+		Print(speed);
+		bool shouldBleed = isBleeding && (speed > 0.55);
+		
+		
+		if(!shouldBleed)
+		{
+			if(bloodTrailInfo.m_Decal)
+			{
+				Print("No contact");
+				bloodTrailInfo.Finalize(0.25);
+			}
+			return;
+		}
+		
+		vector position;
+		vector normal;
+		IEntity contactEntity = traceParam.TraceEnt;
+		
+		position = owner.GetOrigin();
+		normal = "0 -1 0";		//for now 	
+			
+		if(!bloodTrailInfo.m_Decal)
+		{
+			if(bloodTrailInfo.m_bConnectToPrevious)
+			{
+				bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, bloodTrailInfo.m_vLastTracePos, bloodTrailInfo.m_vLastTraceNormal, 0.25, 120.0, m_TrackMaterial, null, 1.0);
+				bloodTrailInfo.m_bConnectToPrevious = false;
+				Print("Connected");
+			}
+			else
+			{
+				bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
+				Print("New");
+			}
+		}
+		else if(vector.DistanceSq(bloodTrailInfo.m_vLastAxlePos, position) > 0.01)
+		{
+			bloodTrailInfo.m_vLastAxlePos = position;
+			
+			int validationEnum = bloodTrailInfo.m_Decal.CanAddToTrackDecal(contactEntity, m_TrackMaterial, position);
+			
+			switch(validationEnum)
+			{
+				case -1:
+				Print("Track error");
+				break;
+				case 0: //Valid
+				{
+					bloodTrailInfo.m_fLength += vector.Distance(position, bloodTrailInfo.m_vLastTracePos);
+					
+					if(!bloodTrailInfo.m_Decal.AddPointToTrackDecal(position, normal, 1.0))
+					{
+						bloodTrailInfo.Finalize(0.0);
+						Print("Finalized point");
+					}
+				}
+				break;
+				case 1: // Different entity
+				{
+					TrackDecal oldDecal = bloodTrailInfo.m_Decal;
+					oldDecal.FinalizeTrackDecal(false, 0);
+					
+					bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, oldDecal, 1.0);
+					bloodTrailInfo.m_bConnectToPrevious = false;
+					Print("Diff ent");
+				}
+				break;
+				case 2: // Too far from last point
+				{
+					bloodTrailInfo.Finalize(0.1);
+					bloodTrailInfo.m_fLength = 0.0;
+					bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
+					bloodTrailInfo.m_bConnectToPrevious = false;
+					Print("Too far");
+				}
+				break;
+			}
+		}
+		
+		bloodTrailInfo.m_vLastTracePos = position;
+		bloodTrailInfo.m_vLastTraceNormal = normal;
+		
+	}
 	
 	
 	// Helpers 

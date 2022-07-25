@@ -5,12 +5,16 @@ class BS_BloodTrailsClass : ScriptComponentClass
 
 class BS_BloodTrails : ScriptComponent
 {	
-	[Attribute("", UIWidgets.ResourceNamePicker, desc: "Material for bloodtrail", params: "emat")]
-	private ResourceName m_BloodtrailMaterial;
+	[Attribute("{AE248EE9E164EB4C}Assets/Decals/BloodDecal.emat", UIWidgets.ResourceNamePicker, desc: "Material for bloodtrail", params: "emat")]
+	private ResourceName m_TrackMaterial;
 
 	bool shouldBleed;
 	
-	ref BloodTrailInfo bloodTrailInfo;
+	
+	
+	ref array<ref BloodTrailInfo> m_TrackDecalsInfo;
+
+	
 	ref TraceParam traceParam;
 	
 	
@@ -32,11 +36,14 @@ class BS_BloodTrails : ScriptComponent
 	{
 		super.EOnInit(owner);
 		GenericEntity generic_entity = GenericEntity.Cast(owner);
-		bloodTrailInfo = new BloodTrailInfo();
+		
+		m_TrackDecalsInfo = new array<ref BloodTrailInfo>();
+		m_TrackDecalsInfo.Resize(1);
+		m_TrackDecalsInfo[0] = new BloodTrailInfo();
 
 
 		
-		shouldBleed = false;
+		SetEventMask(owner, EntityEvent.FRAME);
 
 	}
 	
@@ -44,8 +51,6 @@ class BS_BloodTrails : ScriptComponent
 	void ActivateBloodtrail(IEntity character)
 	{
 	
-		shouldBleed = true;
-		
 		vector useless;
 		traceParam = BS_AnimatedBloodManager.GetSurfaceIntersection(character, GetGame().GetWorld(), character.GetOrigin(), Vector(0, -1, 0), 2, TraceFlags.WORLD | TraceFlags.ENTS, useless);
 
@@ -57,7 +62,6 @@ class BS_BloodTrails : ScriptComponent
 	
 	void DisableBloodtrail()
 	{
-		shouldBleed = false;
 		SetEventMask(GetOwner(), EntityEvent.DISABLED);
 
 	
@@ -66,8 +70,25 @@ class BS_BloodTrails : ScriptComponent
 	
 	void UpdateTrack(IEntity owner)
 	{
-		BloodTrailInfo trackInfo = bloodTrailInfo;
-		World tmpWorld = GetGame().GetWorld();
+		
+		
+		//check if he's bleeding 
+		BloodTrailInfo trackInfo = m_TrackDecalsInfo[0];
+
+		
+		SCR_CharacterDamageManagerComponent charDamageManagerComponent = SCR_CharacterDamageManagerComponent.Cast(owner.FindComponent(SCR_CharacterDamageManagerComponent));
+		SCR_CharacterControllerComponent charControllerComponent = SCR_CharacterControllerComponent.Cast(owner.FindComponent(SCR_CharacterControllerComponent));;
+
+		
+		float speed = charControllerComponent.GetDynamicSpeed();
+		bool isBleeding = charDamageManagerComponent.IsDamagedOverTime(EDamageType.BLEEDING);
+		Print(speed);
+		shouldBleed = isBleeding && (speed > 0.55);
+		
+		
+		
+		
+		
 		
 		if(!shouldBleed)
 		{
@@ -90,13 +111,13 @@ class BS_BloodTrails : ScriptComponent
 		{
 			if(trackInfo.m_bConnectToPrevious)
 			{
-				trackInfo.m_Decal = tmpWorld.CreateTrackDecal(contactEntity, trackInfo.m_vLastTracePos, trackInfo.m_vLastTraceNormal, 0.25, 120.0, m_BloodtrailMaterial, null, 1.0);
+				trackInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, trackInfo.m_vLastTracePos, trackInfo.m_vLastTraceNormal, 0.25, 120.0, m_TrackMaterial, null, 1.0);
 				trackInfo.m_bConnectToPrevious = false;
 				Print("Connected");
 			}
 			else
 			{
-				trackInfo.m_Decal = tmpWorld.CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_BloodtrailMaterial, null, 0.0);
+				trackInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
 				Print("New");
 			}
 		}
@@ -104,7 +125,7 @@ class BS_BloodTrails : ScriptComponent
 		{
 			trackInfo.m_vLastAxlePos = position;
 			
-			int validationEnum = trackInfo.m_Decal.CanAddToTrackDecal(contactEntity, m_BloodtrailMaterial, position);
+			int validationEnum = trackInfo.m_Decal.CanAddToTrackDecal(contactEntity, m_TrackMaterial, position);
 			
 			switch(validationEnum)
 			{
@@ -127,7 +148,7 @@ class BS_BloodTrails : ScriptComponent
 					TrackDecal oldDecal = trackInfo.m_Decal;
 					oldDecal.FinalizeTrackDecal(false, 0);
 					
-					trackInfo.m_Decal = tmpWorld.CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_BloodtrailMaterial, oldDecal, 1.0);
+					trackInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, oldDecal, 1.0);
 					trackInfo.m_bConnectToPrevious = false;
 					Print("Diff ent");
 				}
@@ -136,7 +157,7 @@ class BS_BloodTrails : ScriptComponent
 				{
 					trackInfo.Finalize(0.1);
 					trackInfo.m_fLength = 0.0;
-					trackInfo.m_Decal = tmpWorld.CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_BloodtrailMaterial, null, 0.0);
+					trackInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
 					trackInfo.m_bConnectToPrevious = false;
 					Print("Too far");
 				}
@@ -146,12 +167,15 @@ class BS_BloodTrails : ScriptComponent
 		
 		trackInfo.m_vLastTracePos = position;
 		trackInfo.m_vLastTraceNormal = normal;
+		
 	}
 	
+	
+	float tempTimer = 0;
 	override void EOnFrame(IEntity owner, float timeSlice)
 	{
-		World world = GetGame().GetWorld();
 		UpdateTrack(owner);
+
 	}
 		
 	
