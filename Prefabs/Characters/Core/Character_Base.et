@@ -1,0 +1,8 @@
+SCR_ChimeraCharacter {
+ ID "520EC961A090B1EE"
+ components {
+  BS_BloodTrails "{59F3226C4D6337D1}" {
+   m_BloodtrailMaterial "{AE248EE9E164EB4C}Assets/Decals/BloodDecal.emat"
+  }
+ }
+}

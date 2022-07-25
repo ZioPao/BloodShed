@@ -11,6 +11,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	bool alreadyDestroyed = false;
 	float timerBetweenSplatters; 
 	World world;
+	BS_AnimatedBloodManager animatedBloodManager;		
 
 	
 
@@ -26,8 +27,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
 		
 		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
-		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_FLOAT));
-		
+		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("enableDamageDroplets", new VariableInfo("Enable Droplets (Bleeding)", "1", EFilterType.TYPE_BOOL));
+		//bsVariablesMap.Set("enableBloodTrackDecals", new VariableInfo("Enable blood trails (WILL CRASH THE GAME)", "0", EFilterType.TYPE_BOOL));
 		
 		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
@@ -64,6 +66,13 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		}
 		
 		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
+		if (!animatedBloodManager)
+			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
+				
+
+		
+		
 		
 
 	}
@@ -80,34 +89,65 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
 		
-
-		BS_AnimatedBloodManager animatedBloodManager;		
 		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
-		if (!animatedBloodManager)
-			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
-				
 
 		int correctNodeId;
 		int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
 		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
 			
-	
+		int enableDamageDroplets = bsSettings.Get("enableDamageDroplets").ToInt();
+		
+		
+		if (IsDamagedOverTime(EDamageType.BLEEDING))
+		{
+		
+			//int enableBloodTrackDecals = bsSettings.Get("enableBloodTrackDecals").ToInt();
+			//enableBloodTrackDecals = 1;
 			
+
+			//if (enableBloodTrackDecals == 1)
+			//{
+			UpdateBloodTrail();
+
+			//}
+		
+			if (enableDamageDroplets == 1)
+			{
+				//TODO 
+				Print("Spawning bleeding");
+				SCR_CharacterHitZone tempHitZone = SCR_CharacterHitZone.Cast(pHitZone);
+				float bleedingRate;
+				if (tempHitZone)
+					bleedingRate = (tempHitZone.GetMaxBleedingRate() * 100) + Math.RandomIntInclusive(-200, 200);
+				else 
+					bleedingRate = 1500 + Math.RandomIntInclusive(-200, 200);
+				
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnDroplets, bleedingRate, true, currentCharacter, hitTransform[0]);
+
+			}
+			
+		}
+		
+		
+		
+		
+		
+
 		if (hitTransform[0].Length() != 0)
 		{
-				
-
 			
-			if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
+			EDamageState currentState = GetState();
+			
+			//todo not 100% certain that this is gonna be "Destroyed" when the char is dying.
+			if (currentState == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
-				
-				
+
 				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
 				alreadyDestroyed = true;		//only once
 			}
-			else if (damage > 15.0)
+			else if (damage > 20.0)
 			{
-				animatedBloodManager.SpwanWallSplatter(currentCharacter,  hitTransform[0],  hitTransform[1]);
+				animatedBloodManager.SpawnWallSplatter(currentCharacter,  hitTransform[0],  hitTransform[1]);
 		
 			}
 			
@@ -121,6 +161,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
 			if (Math.RandomInt(0,101) < chanceStaticDecal)		
 				animatedBloodManager.SpawnGenericSplatter(currentCharacter, hitTransform[0], hitTransform[1]);
+			
+
 			
 				
 		}
@@ -175,10 +217,48 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	}
 	
 
+	override void RemoveBleedingHitZone(notnull HitZone hitZone)
+	{
+		super.RemoveBleedingHitZone(hitZone);
+		
+		DisableBloodTrail();
+		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
+		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnDroplets);
+
+		
+	
+	}
+	
+	
+	
+	void UpdateBloodTrail()
+	{
+		Print("Bleeding");
+		BS_BloodTrails bloodTrail = BS_BloodTrails.Cast(currentCharacter.FindComponent(BS_BloodTrails));
+		
+		if (bloodTrail)
+			bloodTrail.ActivateBloodtrail(GetOwner());
+		else 
+			Print("No BloodTrail Comp");
+
+
+	
+	}
+	
+	
+	void DisableBloodTrail()
+	{
+		BS_BloodTrails bloodTrail = BS_BloodTrails.Cast(currentCharacter.FindComponent(BS_BloodTrails));
+		bloodTrail.DisableBloodtrail();
+
+	}
+	
 
 	
 
 }
+
 
 
 class DecalWrapper
