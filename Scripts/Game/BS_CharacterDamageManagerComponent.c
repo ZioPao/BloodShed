@@ -107,7 +107,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 			//if (enableBloodTrackDecals == 1)
 			//{
-			UpdateBloodTrail();
+			GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 100, true, currentCharacter);
+
+			//UpdateBloodTrail();
 
 			//}
 		
@@ -221,7 +223,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	{
 		super.RemoveBleedingHitZone(hitZone);
 		
-		DisableBloodTrail();
+		//DisableBloodTrail();
 		
 		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
 		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnDroplets);
@@ -229,31 +231,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 	
 	}
-	
-	
-	
-	void UpdateBloodTrail()
-	{
-		Print("Bleeding");
-		BS_BloodTrails bloodTrail = BS_BloodTrails.Cast(currentCharacter.FindComponent(BS_BloodTrails));
-		
-		if (bloodTrail)
-			bloodTrail.ActivateBloodtrail(GetOwner());
-		else 
-			Print("No BloodTrail Comp");
 
-
-	
-	}
-	
-	
-	void DisableBloodTrail()
-	{
-		BS_BloodTrails bloodTrail = BS_BloodTrails.Cast(currentCharacter.FindComponent(BS_BloodTrails));
-		bloodTrail.DisableBloodtrail();
-
-	}
-	
 
 	
 

@@ -6,7 +6,7 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	static ref map<EDecalType, ref array<ResourceName>> materialsMap;
 	ref map<int, ref DecalInformation> decalsSpawned;
-	ref map<EntityID, BloodTrailInfo> bloodTrailsInfoMap;
+	ref map<ref EntityID, ref BloodTrailInfo> bloodTrailsInfoMap;
 	
 	ref array<IEntity> bleedingCharacters;
 
@@ -742,18 +742,21 @@ class BS_AnimatedBloodManager : GenericEntity
 	void SpawnBloodTrail(IEntity character)
 	{
 		
-		
+		ResourceName m_TrackMaterial = "{AE248EE9E164EB4C}Assets/Decals/BloodDecal.emat";
 		BloodTrailInfo bloodTrailInfo;
 		
 		
 		//sarch in map 
 		
+		if (!bloodTrailsInfoMap)
+			bloodTrailsInfoMap = new map<ref EntityID, ref BloodTrailInfo>();
+		
 		bloodTrailInfo = bloodTrailsInfoMap.Get(character.GetID());
 		
 		if (!bloodTrailInfo)
 		{
-			bloodTrailsInfoMap.Insert(character.GetID(), new BloodTrailInfo() );
-			bloodTrailInfo = bloodTrailsInfoMap.Get(character.GetID());
+			bloodTrailInfo = new BloodTrailInfo();
+			bloodTrailsInfoMap.Insert(character.GetID(), bloodTrailInfo);
 		
 		}
 		
@@ -763,10 +766,8 @@ class BS_AnimatedBloodManager : GenericEntity
 		
 		float speed = charControllerComponent.GetDynamicSpeed();
 		bool isBleeding = charDamageManagerComponent.IsDamagedOverTime(EDamageType.BLEEDING);
-		Print(speed);
 		bool shouldBleed = isBleeding && (speed > 0.55);
-		
-		
+
 		if(!shouldBleed)
 		{
 			if(bloodTrailInfo.m_Decal)
@@ -776,25 +777,28 @@ class BS_AnimatedBloodManager : GenericEntity
 			}
 			return;
 		}
-		
+				
+		vector useless;
+		TraceParam traceParam = GetSurfaceIntersection(character, GetGame().GetWorld(), character.GetOrigin(), Vector(0, -1, 0), 2, TraceFlags.WORLD | TraceFlags.ENTS, useless);
+
 		vector position;
 		vector normal;
 		IEntity contactEntity = traceParam.TraceEnt;
 		
-		position = owner.GetOrigin();
+		position = character.GetOrigin();
 		normal = "0 -1 0";		//for now 	
 			
 		if(!bloodTrailInfo.m_Decal)
 		{
 			if(bloodTrailInfo.m_bConnectToPrevious)
 			{
-				bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, bloodTrailInfo.m_vLastTracePos, bloodTrailInfo.m_vLastTraceNormal, 0.25, 120.0, m_TrackMaterial, null, 1.0);
+				bloodTrailInfo.m_Decal = GetGame().GetWorld().CreateTrackDecal(contactEntity, bloodTrailInfo.m_vLastTracePos, bloodTrailInfo.m_vLastTraceNormal, 0.25, 120.0, m_TrackMaterial, null, 1.0);
 				bloodTrailInfo.m_bConnectToPrevious = false;
 				Print("Connected");
 			}
 			else
 			{
-				bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
+				bloodTrailInfo.m_Decal = GetGame().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
 				Print("New");
 			}
 		}
@@ -825,7 +829,7 @@ class BS_AnimatedBloodManager : GenericEntity
 					TrackDecal oldDecal = bloodTrailInfo.m_Decal;
 					oldDecal.FinalizeTrackDecal(false, 0);
 					
-					bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, oldDecal, 1.0);
+					bloodTrailInfo.m_Decal = GetGame().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, oldDecal, 1.0);
 					bloodTrailInfo.m_bConnectToPrevious = false;
 					Print("Diff ent");
 				}
@@ -834,7 +838,7 @@ class BS_AnimatedBloodManager : GenericEntity
 				{
 					bloodTrailInfo.Finalize(0.1);
 					bloodTrailInfo.m_fLength = 0.0;
-					bloodTrailInfo.m_Decal = GetOwner().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
+					bloodTrailInfo.m_Decal = GetGame().GetWorld().CreateTrackDecal(contactEntity, position, normal, 0.25, 120.0, m_TrackMaterial, null, 0.0);
 					bloodTrailInfo.m_bConnectToPrevious = false;
 					Print("Too far");
 				}
@@ -991,3 +995,7 @@ enum EDecalType
 	SINGLE_FRAME_GENERIC_SPLATTER,
 	DROPLETS
 }
+
+class BloodTrailInfo : TrackDecalInfo
+{
+};

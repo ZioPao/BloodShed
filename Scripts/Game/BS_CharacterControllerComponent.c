@@ -26,7 +26,7 @@ modded class SCR_CharacterControllerComponent : CharacterControllerComponent
 		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnDroplets);
 		
 		//Remove trailing
-		characterDamageManagerComponent.DisableBloodTrail();
+		//characterDamageManagerComponent.DisableBloodTrail();
 
 	}
 
