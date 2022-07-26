@@ -2,14 +2,14 @@ MatPBRDecal {
  Color 0.128 0.004 0.004 1
  AlphaTest 0.742
  AlphaMul 1.237
- BCRMap "{E46249A261CAAE98}materials/wounds/entry_wound/blood4.edds"
- OpacityMap "{40F60BF415F42259}materials/wounds/entry_wound/blood4o.edds"
+ BCRMap "{90545C9EF0DBA499}Assets/Decals/Character/Impact/Data/DecalFlesh_BCR.edds"
+ OpacityMap "{240B57D37E5BFDD7}Assets/Decals/Character/Impact/Data/DecalFlesh_Opacity.edds"
  NormalPower 0.606
- NMOMap "{10C07FD8095F791B}materials/wounds/entry_wound/blood4_NMO.edds"
+ NMOMap "{A88CE70C29ACF607}Assets/Decals/Character/Impact/Data/DecalFlesh_NMO.edds"
  GlobalMapsUVTransform MatUVTransform "{59AD4012A428BC72}" {
  }
  NormalCombinePower 2.978
- HeightMap "{9D10C187521CBFF2}materials/wounds/entry_wound/blood4_DISP.edds"
+ HeightMap "{DC68D21FD05CDEEE}Assets/Decals/Character/Impact/Data/DecalFlesh_Height.edds"
  ParallaxScale 0.066
  ParallaxMidlePlane 0.317
  ParallaxShadowScale 0.134

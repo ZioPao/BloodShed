@@ -1,0 +1,22 @@
+MatPBRDecal {
+ Color 0.16 0 0.026 1
+ DiffuseIBL 1 1 1 1
+ ZBias 3
+ SortBias 3
+ SpecularMul 5
+ AlphaMul 2.03
+ BlendMode AlphaBlend
+ CrossFade 0
+ RoughnessScale 0
+ AOScale 0.369
+ BCRMap "{3981E9BECCAB5F17}Assets/Decals/BCRBloodDecal.edds"
+ OpacityMap "{3981E9BECCAB5F17}Assets/Decals/BCRBloodDecal.edds"
+ NormalPower 2.258
+ NMOMap "{D041BFA488CBC5E5}Assets/Decals/NMOBloodDecal.edds"
+ GlobalMapsUVTransform MatUVTransform "{559CF7EE34A5514C}" {
+ }
+ GBufferNormal 1
+ NormalCombinePower 1.609
+ HeightMap "{8D3E7AE44CD81998}Assets/Decals/Markings/Stripes/Data/RoadStripe_DoubleFull_01_A.edds"
+ ParallaxShadowScale 0.474
+}

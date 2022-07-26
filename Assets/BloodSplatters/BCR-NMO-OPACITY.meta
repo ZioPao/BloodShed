@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{004822E022B03A86}Assets/BloodSplatters/BCR-NMO-OPACITY"
+ Configurations {
+  FolderResourceClass PC {
+  }
+  FolderResourceClass XBOX_ONE : PC {
+  }
+  FolderResourceClass XBOX_SERIES : PC {
+  }
+  FolderResourceClass PS4 : PC {
+  }
+  FolderResourceClass HEADLESS : PC {
+  }
+ }
+}

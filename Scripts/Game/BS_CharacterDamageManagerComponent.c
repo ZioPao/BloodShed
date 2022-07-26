@@ -1,40 +1,35 @@
 modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponent
 {
-	ref map<string, string> bsSettings;
 	
+	ref map<string, string> bsSettings;
 	const string BS_FileNameJson = "BS_Settings.json";
-	const string BS_MOD_ID = "59951797A291CA02";				
-	const ResourceName weaponSplatterMaterial = "{098960A4823D679F}materials/weapon_splatter/WeaponBlood.emat";
-
+	const string BS_MOD_ID = "59D925199B6E6BFD";			
+	
+	
+	
 	IEntity currentCharacter;
 	bool alreadyDestroyed = false;
 	float timerBetweenSplatters; 
 	World world;
+	BS_AnimatedBloodManager animatedBloodManager;		
 
 	
-	ref static array<ref DecalWrapper> currentPlayerDecals;
-	ref array<ref DecalWrapper> currentCharacterDecals;
 
 	override void OnInit(IEntity owner)
 	{
 		super.OnInit(owner);
 		currentCharacter = owner;
 		world = owner.GetWorld();
-		
-		currentCharacterDecals = new ref array<ref DecalWrapper>();
-		
-		if (!currentPlayerDecals)
-			currentPlayerDecals = new array<ref DecalWrapper>();
-		
 
-		////////////////////////////////////////////////////////////////////////////////////////////////
-		//Settings initialization stuff 
-		MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
-				
-		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
-		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_FLOAT));
 		
+		
+		////////////////////////////////////////////////////////////////////////////////
+		OrderedVariablesMap bsVariablesMap = new OrderedVariablesMap();
+		
+		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
+		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("enableDamageDroplets", new VariableInfo("Enable Droplets (Bleeding)", "1", EFilterType.TYPE_BOOL));
+		//bsVariablesMap.Set("enableBloodTrackDecals", new VariableInfo("Enable blood trails (WILL CRASH THE GAME)", "0", EFilterType.TYPE_BOOL));
 		
 		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
@@ -46,8 +41,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		bsVariablesMap.Set("wallsplatterMaximumAlphaTestChange", new VariableInfo("Alpha Test Wallsplatters - Max Random Change", "0.02", EFilterType.TYPE_FLOAT));
 	
 			
-		bsVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha Test Maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
-		bsVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha Test Minimum value", "0.1", EFilterType.TYPE_FLOAT));
+		//bsVariablesMap.Set("maxAlphaMul", new VariableInfo("Alpha Test Maximum value", "5", EFilterType.TYPE_FLOAT));			//max 5
+		//bsVariablesMap.Set("minAlphaTest", new VariableInfo("Alpha Test Minimum value", "0.1", EFilterType.TYPE_FLOAT));
 		
 		bsVariablesMap.Set("chanceStaticDecal", new VariableInfo("Chance of a static blood decal to appear (0 to 100)", "50", EFilterType.TYPE_FLOAT));
 
@@ -57,24 +52,29 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		bsVariablesMap.Set("maxDecalsPlayerWeapon", new VariableInfo("Max Decals for Player Weapon", "4", EFilterType.TYPE_INT));
 			
 		bsVariablesMap.Set("bloodpoolSize", new VariableInfo("Bloodpol Size", "1.5", EFilterType.TYPE_FLOAT));
-		bsVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));
-
+		bsVariablesMap.Set("wallsplatterSize", new VariableInfo("Wallsplatter Size", "1", EFilterType.TYPE_FLOAT));	
+	
+		if (!MCF_SettingsManager.GetJsonManager(BS_MOD_ID))
+		{
+			MCF_SettingsManager.Setup(BS_MOD_ID, BS_FileNameJson, bsVariablesMap);
 		
-		//bsVariablesMap.Set("debugSpheres", new VariableInfo("Debug Spheres", "0", EFilterType.TYPE_BOOL));
-
-		
-		if (!BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID))
-			bsSettings = BS_mcfSettingsManager.Setup(BS_MOD_ID, BS_FileNameJson, bsVariablesMap);
+		}
 		else if (!bsSettings)
 		{
-			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
-			BS_mcfSettingsManager.GetJsonManager(BS_MOD_ID).SetUserHelpers(bsVariablesMap);		
+			bsSettings = MCF_SettingsManager.GetModSettings(BS_MOD_ID);
+			MCF_SettingsManager.GetJsonManager(BS_MOD_ID).SetUserHelpers(bsVariablesMap);		
 		}
+		
+		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
+		if (!animatedBloodManager)
+			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
 				
+
 		
-		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		
+
 	}
 
 	override void OnDamage(
@@ -88,176 +88,99 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 			int nodeID)
 	{
 		super.OnDamage(type, damage, pHitZone, instigator, hitTransform, speed, colliderID, nodeID);
-			
 		
-		
-		if (MCF_SettingsManager.IsInitialized())
-		{
-			MCF_SettingsManager BS_mcfSettingsManager = MCF_SettingsManager.GetInstance();
-			bsSettings = BS_mcfSettingsManager.GetModSettings(BS_MOD_ID);
-		
-			
-			//Setup animatedBloodManager
-			BS_AnimateBloodManager animatedBloodManager;		
-			animatedBloodManager = BS_AnimateBloodManager.GetInstance();		
-			if (!animatedBloodManager)
-				animatedBloodManager = BS_AnimateBloodManager.Cast(GetGame().SpawnEntity(BS_AnimateBloodManager, GetGame().GetWorld(), null));
-				
-			
-			bsSettings = MCF_SettingsManager.GetInstance().GetModSettings(BS_MOD_ID);
-	
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
 
-			int correctNodeId;
-			int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
-			pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
+		int correctNodeId;
+		int colliderDescriptorIndex = pHitZone.GetColliderDescriptorIndex(colliderID);
+		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
 			
-	
+		int enableDamageDroplets = bsSettings.Get("enableDamageDroplets").ToInt();
+		
+		
+		if (IsDamagedOverTime(EDamageType.BLEEDING))
+		{
+		
+			//int enableBloodTrackDecals = bsSettings.Get("enableBloodTrackDecals").ToInt();
+			//enableBloodTrackDecals = 1;
 			
-			if (hitTransform[0].Length() != 0)
+
+			//if (enableBloodTrackDecals == 1)
+			//{
+			GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 100, true, currentCharacter);
+
+			//UpdateBloodTrail();
+
+			//}
+		
+			if (enableDamageDroplets == 1)
 			{
+				//TODO 
+				Print("Spawning bleeding");
+				SCR_CharacterHitZone tempHitZone = SCR_CharacterHitZone.Cast(pHitZone);
+				float bleedingRate;
+				if (tempHitZone)
+					bleedingRate = (tempHitZone.GetMaxBleedingRate() * 100) + Math.RandomIntInclusive(-200, 200);
+				else 
+					bleedingRate = 1500 + Math.RandomIntInclusive(-200, 200);
 				
-				if (GetState() == EDamageState.DESTROYED && !alreadyDestroyed)
-				{
-					GetGame().GetCallqueue().CallLater(animatedBloodManager.StartNewAnimation, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], EDecalType.BLOODPOOL, false, 1.5, correctNodeId);
-					alreadyDestroyed = true;		//only once
-				}
-				else if (damage > 20.0)
-				{
-					//todo add a timer to prevent more than 1 splatter on the wall 
-					animatedBloodManager.StartNewAnimation(currentCharacter,  hitTransform[0],  hitTransform[1], EDecalType.WALLSPLATTER, false, 0.0, correctNodeId);
-	
-					
-				}
-			
-				int enableWeaponSplatters = bsSettings.Get("enableWeaponSplatters").ToInt();
-				
-				if (enableWeaponSplatters == 1)
-					GenerateWeaponSplatters(currentCharacter, bsSettings);
-				
-				float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
-				if (Math.RandomInt(0,101) < chanceStaticDecal)		
-					animatedBloodManager.SpawnSingleFrame(currentCharacter, world, hitTransform[0], hitTransform[1]);
-	
-				
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnDroplets, bleedingRate, true, currentCharacter, hitTransform[0]);
+
 			}
-		}
-	}
-	
-	
-	void GenerateWeaponSplatters(IEntity currentChar, map<string,string> settings)
-	{
-		
-		// Settings
-		float farClip = bsSettings.Get("farClip").ToFloat();
-		float nearClip = bsSettings.Get("nearClip").ToFloat();
-		int maxDecalsPlayerWeapon = bsSettings.Get("maxDecalsPlayerWeapon").ToInt();	
-		bool debugSpheres = 0;			//settings.Get("debugSpheres").ToInt();
-		
-		// Other characters 
-		int maxDecalsPerChar = bsSettings.Get("maxDecalsPerChar").ToInt();
-		ManageWeaponDecalsStack(currentChar, currentCharacterDecals, 0, 2, maxDecalsPerChar);
-
-		// Player Weapon
-		PlayerManager pMan = GetGame().GetPlayerManager();
-		SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
-		IEntity currentPlayer = m_playerController.GetMainEntity();
-		vector playerTransform[4];
-		currentPlayer.GetTransform(playerTransform);		
 			
-
+		}
 		
 		
-		vector originCurrentCharacter = currentChar.GetOrigin();
-
-		if (vector.Distance(playerTransform[3], originCurrentCharacter) < 3)
-			ManageWeaponDecalsStack(currentPlayer, currentPlayerDecals, nearClip, farClip, maxDecalsPlayerWeapon, debugSpheres);
 		
-	
-	}
-	
-
-
-	
-	void ManageWeaponDecalsStack(IEntity owner, array<ref DecalWrapper> stack, float nearClip, float farClip, int maxDecals, bool debugSpheres = false)
-	{
-		int materialColor = Color.FromRGBA(16, 0, 0,255).PackToInt();		//move this away
-		int count = stack.Count();
 		
-		if (count >= maxDecals)
+		
+
+		if (hitTransform[0].Length() != 0)
 		{
-			int index = Math.RandomIntInclusive(0, stack.Count() - 1);
-			//Print("Removing element " + index);
-			DecalWrapper tmpWrapper = stack.Get(index);
-			Decal tmpDecal = tmpWrapper.wrappedDecal;
-			if (tmpDecal)
+			
+			EDamageState currentState = GetState();
+			
+			//todo not 100% certain that this is gonna be "Destroyed" when the char is dying.
+			if (currentState == EDamageState.DESTROYED && !alreadyDestroyed)
 			{
-				world.RemoveDecal(tmpDecal);
-				stack.Remove(index);
+
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
+				alreadyDestroyed = true;		//only once
 			}
-
-		}
+			else if (damage > 20.0)
+			{
+				animatedBloodManager.SpawnWallSplatter(currentCharacter,  hitTransform[0],  hitTransform[1]);
 		
-		// Tries to generate a decal
-		count = stack.Count();
-		if (count < maxDecals)
-		{
+			}
 			
-			vector leftHandTransform[4];
-			int nodeLeftHand = 2089750091;
-			owner.GetBoneMatrix(nodeLeftHand, leftHandTransform);
+			bsSettings = MCF_SettingsManager.GetModSettings(BS_MOD_ID);
+			int enableWeaponSplatters = bsSettings.Get("enableWeaponSplatters").ToInt();
+				
+			if (enableWeaponSplatters == 1)
+				animatedBloodManager.GenerateWeaponSplatters(currentCharacter);
+			
+				
+			float chanceStaticDecal = bsSettings.Get("chanceStaticDecal").ToFloat();
+			if (Math.RandomInt(0,101) < chanceStaticDecal)		
+				animatedBloodManager.SpawnGenericSplatter(currentCharacter, hitTransform[0], hitTransform[1]);
+			
 
 			
-			vector tmpTransformHand = leftHandTransform[3];
-			tmpTransformHand[0] = tmpTransformHand[0]; //+ diffOriginX;
-			tmpTransformHand[1] = tmpTransformHand[1]; //+ diffOriginY;
-			tmpTransformHand[2] = tmpTransformHand[2]; //+ diffOriginZ;
-			
-			vector origin = owner.CoordToParent(tmpTransformHand);
-			vector projection = origin;
-
-			DecalWrapper newTmpWrapperLeft = DecalWrapper(world.CreateDecal(owner, origin, projection, nearClip, farClip, 0, 1, 1, weaponSplatterMaterial, -1, materialColor));
-			stack.Insert(newTmpWrapperLeft);
-			if(debugSpheres)
-				MCF_Debug.DrawSphereAtPos(origin, COLOR_RED);
-
+				
 		}
-
 		
 	}
+	
+	
+	
+	
+	
+	
 	
 	
 	//------------------------------------------------------------------------------------------------
 
-	
-	static void CleanWeapon()
-	{
-		
-		//todo spherecast and get near decals.
-		//Print(previousPlayerWeaponDecal);
-		//Print(currentPlayerDecals.Count());
-		
-		
 
-		int count = currentPlayerDecals.Count();
-		
-		foreach(DecalWrapper decWrapper : currentPlayerDecals)
-		{
-			Decal tmpDecal = decWrapper.wrappedDecal;
-			
-			if (tmpDecal)
-			{
-				//Print("Removing decal: " + tmpDecal);
-				SCR_PlayerController m_playerController = SCR_PlayerController.Cast(GetGame().GetPlayerController());
-				IEntity currentPlayer = m_playerController.GetMainEntity();
-				SCR_CharacterControllerComponent.Cast(currentPlayer.FindComponent(SCR_CharacterControllerComponent)).SetInspectionMode(true);
-				GetGame().GetWorld().RemoveDecal(tmpDecal);		//doesn't automatically destroy the pointer
-
-			}
-		}
-		
-		currentPlayerDecals.Clear();
-
-	}
 	
 	
 	
@@ -296,10 +219,24 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	}
 	
 
+	override void RemoveBleedingHitZone(notnull HitZone hitZone)
+	{
+		super.RemoveBleedingHitZone(hitZone);
+		
+		//DisableBloodTrail();
+		
+		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
+		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnDroplets);
+
+		
+	
+	}
+
 
 	
 
 }
+
 
 
 class DecalWrapper

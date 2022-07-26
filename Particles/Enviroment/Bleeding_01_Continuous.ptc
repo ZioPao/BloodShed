@@ -22,7 +22,6 @@ EffectDef {
    RandomAngle 0
    RandomUFlip 1
    Velocity 0.2
-   VelocityRND 0
    VelAffect 0.4
    AirResistance 1
    GravityMultiply 0.2
@@ -33,6 +32,7 @@ EffectDef {
    LifetimeByAnim 0
    RandomFrame 0
    Lifetime 2
+   LifetimeRND 0
    LifetimeVelFactor 1
    LifetimeVelSmoothing 1
    LifetimeShortening 0.5
@@ -40,12 +40,12 @@ EffectDef {
     0 0.084 0.451 0.548 1 1
    }
    EmittingTime 30
-   Repeat 0
+   Repeat 1
    AlphaMast {
     0 1 1 1
    }
    BRateMast {
-    0.003 0.108 0.045 0.928 0.406 0.964 0.741 0.337 1 0
+    0 1 0.501 0.993 0.689 0.699 1 0
    }
   }
  }

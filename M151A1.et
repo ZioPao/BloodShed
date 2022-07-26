@@ -1,0 +1,12 @@
+Vehicle : "{F649585ABB3706C4}Prefabs/Vehicles/Wheeled/M151A2/M151A2.et" {
+ ID "44EC665ABD2FF04B"
+ components {
+  SCR_VehicleDamageManagerComponent "{141326E9FD94FE40}" {
+   m_fVehicleDestroyDamage 10408.7
+  }
+  SCR_VehicleTrackDecal "{59F3450E13CAFF8D}" {
+   m_TrackMaterial "{AE248EE9E164EB4B}Assets/Decals/TrackDecal.emat"
+  }
+ }
+ coords 8185.978 221.62 2193.076
+}
