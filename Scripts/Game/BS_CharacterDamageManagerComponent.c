@@ -28,8 +28,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_BOOL));
-		bsVariablesMap.Set("enableDamageDroplets", new VariableInfo("Enable Droplets (Bleeding)", "1", EFilterType.TYPE_BOOL));
-		//bsVariablesMap.Set("enableBloodTrackDecals", new VariableInfo("Enable blood trails (WILL CRASH THE GAME)", "0", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("enableDamageDroplets", new VariableInfo("Enable Droplets from bleeding", "1", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("enableBloodTrackDecals", new VariableInfo("Enable blood trails when bleeding", "1", EFilterType.TYPE_BOOL));
 		
 		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
@@ -96,23 +96,18 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
 			
 		int enableDamageDroplets = bsSettings.Get("enableDamageDroplets").ToInt();
-		
+		int enableBloodTrackDecals = bsSettings.Get("enableBloodTrackDecals").ToInt();
+
 		
 		if (IsDamagedOverTime(EDamageType.BLEEDING))
 		{
-		
-			//int enableBloodTrackDecals = bsSettings.Get("enableBloodTrackDecals").ToInt();
-			//enableBloodTrackDecals = 1;
+
 			
 
-			//if (enableBloodTrackDecals == 1)
-			//{
-			GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 100, true, currentCharacter);
+			if (enableBloodTrackDecals == 1)
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 10, true, currentCharacter);
+			
 
-			//UpdateBloodTrail();
-
-			//}
-		
 			if (enableDamageDroplets == 1)
 			{
 				//TODO 
@@ -120,7 +115,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 				SCR_CharacterHitZone tempHitZone = SCR_CharacterHitZone.Cast(pHitZone);
 				float bleedingRate;
 				if (tempHitZone)
-					bleedingRate = (tempHitZone.GetMaxBleedingRate() * 100) + Math.RandomIntInclusive(-200, 200);
+					bleedingRate = (tempHitZone.GetMaxBleedingRate() * 100) + Math.RandomIntInclusive(-100, 100);
 				else 
 					bleedingRate = 1500 + Math.RandomIntInclusive(-200, 200);
 				
@@ -227,6 +222,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		
 		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();		
 		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnDroplets);
+		GetGame().GetCallqueue().Remove(animatedBloodManager.SpawnBloodTrail);
 
 		
 	

@@ -10,6 +10,7 @@ modded class SCR_VehicleTrackDecal : ScriptComponent
 	
 	override void UpdateTrack(IEntity owner, int wheelIdx)
 	{
+
 		TrackDecalInfo trackInfo = m_TrackDecalsInfo[wheelIdx];
 
 		VehicleWheeledSimulation wheeledSimulation = VehicleWheeledSimulation.Cast(owner.FindComponent(VehicleWheeledSimulation));
