@@ -29,7 +29,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		bsVariablesMap.Set("waitTimeBetweenFrames", new VariableInfo("Wait between frames", "0.033", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("enableWeaponSplatters", new VariableInfo("Enable Weapon Splatters (Currently kinda broken)", "0", EFilterType.TYPE_BOOL));
 		bsVariablesMap.Set("enableDamageDroplets", new VariableInfo("Enable Droplets from bleeding", "1", EFilterType.TYPE_BOOL));
-		bsVariablesMap.Set("enableBloodTrackDecals", new VariableInfo("Enable blood trails when bleeding", "1", EFilterType.TYPE_BOOL));
+		bsVariablesMap.Set("enableBloodTrails", new VariableInfo("Enable blood trails when bleeding", "1", EFilterType.TYPE_BOOL));
 		
 		bsVariablesMap.Set("bloodpoolMinimumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Min Random Change", "0.0002", EFilterType.TYPE_FLOAT));
 		bsVariablesMap.Set("bloodpoolMaximumAlphaMulChange", new VariableInfo("Alpha Mul Bloodpools - Max Random Change", "0.03", EFilterType.TYPE_FLOAT));
@@ -96,7 +96,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		pHitZone.TryGetColliderDescription(currentCharacter, colliderDescriptorIndex, null, null, correctNodeId);
 			
 		int enableDamageDroplets = bsSettings.Get("enableDamageDroplets").ToInt();
-		int enableBloodTrackDecals = bsSettings.Get("enableBloodTrackDecals").ToInt();
+		int enableBloodTrails = bsSettings.Get("enableBloodTrails").ToInt();
 
 		
 		if (IsDamagedOverTime(EDamageType.BLEEDING))
@@ -104,8 +104,12 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 			
 
-			if (enableBloodTrackDecals == 1)
-				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 10, true, currentCharacter);
+			if (enableBloodTrails == 1)
+			{
+				Print("Spawning blood trails");
+				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnBloodTrail, 10, true, currentCharacter, hitTransform[0], damage);
+
+			}
 			
 
 			if (enableDamageDroplets == 1)

@@ -101,10 +101,11 @@ class BS_AnimatedBloodManager : GenericEntity
 			"{00CDA30B87D3333F}Materials/WallSplatters/095.emat","{5E258A48385EBD30}Materials/WallSplatters/096.emat","{AA2DCDD03583D544}Materials/WallSplatters/097.emat","{CD95A076DDD255E4}Materials/WallSplatters/098.emat","{399DE7EED00F3D90}Materials/WallSplatters/099.emat",
 			"{B8C2577670569533}Materials/WallSplatters/100.emat"});
 				
-		materialsMap.Insert(EDecalType.SINGLE_FRAME_GENERIC_SPLATTER, {"{926152FC7FC453C7}Materials/GenericSplatters/001.emat", "{CC897BBFC049DDC8}Materials/GenericSplatters/002.emat", "{38813C27CD94B5BC}Materials/GenericSplatters/003.emat", "{71592938BF52C1D6}Materials/GenericSplatters/004.emat" });
+		materialsMap.Insert(EDecalType.SINGLE_FRAME_GENERIC_SPLATTER, {"{926152FC7FC453C7}Materials/GenericSplatters/001.emat", "{CC897BBFC049DDC8}Materials/GenericSplatters/002.emat", "{38813C27CD94B5BC}Materials/GenericSplatters/003.emat", 
+			"{71592938BF52C1D6}Materials/GenericSplatters/004.emat", "{85516EA0B28FA9A2}Materials/GenericSplatters/005.emat" });
 
 		// temp materials, not final
-		materialsMap.Insert(EDecalType.DROPLETS, {"{38813C27CD94B5BC}Materials/GenericSplatters/003.emat", "{71592938BF52C1D6}Materials/GenericSplatters/004.emat"});
+		materialsMap.Insert(EDecalType.DROPLETS, {"{38813C27CD94B5BC}Materials/GenericSplatters/003.emat", "{71592938BF52C1D6}Materials/GenericSplatters/004.emat", "{85516EA0B28FA9A2}Materials/GenericSplatters/005.emat",});
 
 		//lets load everything right here?
 		materialsLoaded = new array<Material>();
@@ -136,6 +137,9 @@ class BS_AnimatedBloodManager : GenericEntity
 		if (!currentPlayerDecals)
 			currentPlayerDecals = new array<ref DecalWrapper>();
 		
+		MCF_Debug.dbgShapes = new array<ref Shape>();
+
+		
 		SetEventMask(EntityEvent.INIT | EntityEvent.FRAME);
 		
 	}
@@ -161,18 +165,6 @@ class BS_AnimatedBloodManager : GenericEntity
 			{
 				AnimateDecals();
 				
-				
-				
-				
-				//use CalQueue method 
-				
-				
-				
-				
-				
-				
-				
-				
 				currentTime = 0;
 				settings = MCF_SettingsManager.GetModSettings(ABL_MOD_ID);
 				waitTimeBetweenFrames = settings.Get("waitTimeBetweenFrames").ToFloat();
@@ -185,35 +177,7 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	
 	
-		//proto external bool IsDamagedOverTime(EDamageType dType);
 
-
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	void SpawnDecal(TraceParam traceParam, EDecalType type, vector origin, vector projection, float nearClip, float farClip, float angle, float size, float alphaTestValue = -1, float alphaMulValue = -1, int lifetime = -1)
 	{
 		
@@ -230,15 +194,6 @@ class BS_AnimatedBloodManager : GenericEntity
 			World tmpWorld = GetGame().GetWorld();
 		    decal = tmpWorld.CreateDecal(traceParam.TraceEnt, origin, projection, nearClip, farClip, angle, size, 1, materialResource, lifetime, materialColor);
 
-
-			// try to insert it into the decalsSpawned map 
-			int index = Math.RandomInt(-10000, 10000);
-			
-			//todo really inefficient
-			while(decalsSpawned.Get(index))
-				index = Math.RandomInt(-10000, 10000);
-
-	
             DecalBaseInfo decalBaseInfo = new DecalBaseInfo(decal, type, 0, size, angle, 1);
             DecalPositionInfo decalPositionInfo = new DecalPositionInfo(traceParam, origin, projection);
 			MaterialInfo materialInfo = new MaterialInfo(alphaMulValue, alphaTestValue);      //todo need to see the og values.... set them over here, this is wrong for now
@@ -250,12 +205,19 @@ class BS_AnimatedBloodManager : GenericEntity
 				material.SetParam("AlphaMul", alphaMulValue);
 				
            	materialInfo.SetIndexAlphaMap(randomMaterialIndex);
-
-		
-			
             DecalInformation decalInformation = new DecalInformation(decalBaseInfo, decalPositionInfo, materialInfo);
+			
+			
 			if (type != EDecalType.SINGLE_FRAME_GENERIC_SPLATTER && type != EDecalType.DROPLETS)
 			{
+
+				// try to insert it into the decalsSpawned map 
+				int index = Math.RandomInt(-10000, 10000);
+				
+				//todo really inefficient
+				while(decalsSpawned.Get(index))
+					index = Math.RandomInt(-10000, 10000);
+				
 				decalsSpawned.Insert(index, decalInformation);	
 
 			}
@@ -269,12 +231,7 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	void SpawnDroplets(IEntity character, vector hitPosition)
 	{
-		
-		// can we use some kind of id?
-		if (!bleedingCharacters.Find(character))
-		{
-			bleedingCharacters.Insert(character);
-		}
+
 		
 		
 		float distance = 2.0;
@@ -296,9 +253,8 @@ class BS_AnimatedBloodManager : GenericEntity
 		
 		size = Math.RandomFloatInclusive(0.2, 0.4);
 		angle = Math.RandomFloatInclusive(-360, 360);
-		
+
 		SpawnDecal(traceParam, EDecalType.DROPLETS, origin, projection, nearClip, farClip, angle, size );
-		//MCF_Debug.DrawSphereAtPos(origin, COLOR_RED);
 	
 	}
 	
@@ -476,6 +432,46 @@ class BS_AnimatedBloodManager : GenericEntity
 		
 
 	}
+
+
+	void SpawnBloodTrail(IEntity character, vector hitPosition, float damage)
+	{
+		
+		float distance = 2.0;
+		float nearClip = 0;
+		float farClip = 2.0;
+		float angle;
+		float size;
+		
+		//Print(damage);
+
+		
+		SCR_CharacterDamageManagerComponent charDamageManagerComponent = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
+		SCR_CharacterControllerComponent charControllerComponent = SCR_CharacterControllerComponent.Cast(character.FindComponent(SCR_CharacterControllerComponent));;
+
+		
+		float speed = charControllerComponent.GetVelocity().Length();
+		bool shouldBleed = charDamageManagerComponent.IsDamagedOverTime(EDamageType.BLEEDING) && (speed > 0);
+
+		if(!shouldBleed)
+			return;
+
+		vector origin;
+		vector projection;
+		vector intersectionPosition;
+
+		TraceParam traceParam = GetSurfaceIntersection(character, GetGame().GetWorld(), hitPosition, Vector(0, -1, 0), distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
+		origin = character.GetOrigin() + Vector(0, distance / 4, 0);			
+		projection = -traceParam.TraceNorm;
+		
+		size = Math.RandomFloatInclusive(0.1, damage/200);
+		angle = Math.RandomFloatInclusive(-360, 360);
+
+		SpawnDecal(traceParam, EDecalType.DROPLETS, origin, projection, nearClip, farClip, angle, size, -1, -1, -1 );
+	
+	}
+
+
 
 
 
@@ -737,46 +733,7 @@ class BS_AnimatedBloodManager : GenericEntity
 	}
 	
 	
-	
-	void SpawnBloodTrail(IEntity character)
-	{
-		float distance = 2.0;
-		float size;
-		float angle;
-		
-		float nearClip = 0;
-		float farClip = 2;
 
-		SCR_CharacterDamageManagerComponent charDamageManagerComponent = SCR_CharacterDamageManagerComponent.Cast(character.FindComponent(SCR_CharacterDamageManagerComponent));
-		SCR_CharacterControllerComponent charControllerComponent = SCR_CharacterControllerComponent.Cast(character.FindComponent(SCR_CharacterControllerComponent));;
-
-		
-		//float speed = charControllerComponent.GetDynamicSpeed();
-		
-		float speed = charControllerComponent.GetVelocity().Length();
-		
-		bool shouldBleed = charDamageManagerComponent.IsDamagedOverTime(EDamageType.BLEEDING) && (speed > 0);
-
-		if(!shouldBleed)
-			return;
-		//{
-		//	return;
-		//}
-		
-				
-		vector origin;
-		vector projection;
-		vector intersectionPosition;
-		TraceParam traceParam = GetSurfaceIntersection(character, GetGame().GetWorld(), character.GetOrigin(), Vector(0, -1, 0), distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
-		origin = character.GetOrigin() + Vector(0, distance / 4, 0);			
-		projection = -traceParam.TraceNorm;
-		
-		size = Math.RandomFloatInclusive(0.1, 0.25);
-		angle = Math.RandomFloatInclusive(-360, 360);
-		
-		SpawnDecal(traceParam, EDecalType.DROPLETS, origin, projection, nearClip, farClip, angle, size, -1, -1, 100 );
-	
-	}
 	
 	
 	// Helpers 
@@ -796,11 +753,6 @@ class BS_AnimatedBloodManager : GenericEntity
 	
 	
 }
-
-
-
-
-
 
 
 class DecalInformation
