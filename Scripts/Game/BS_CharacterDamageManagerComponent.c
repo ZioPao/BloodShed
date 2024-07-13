@@ -10,6 +10,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 	float timerBetweenSplatters;
 	World world;
 	BS_AnimatedBloodManager animatedBloodManager;
+	
+		
+	protected vector m_lastHitPosition;
+	protected vector m_lastHitDirection;
+	protected int m_lastHitNodeId;
 
 	override void OnInit(IEntity owner)
 	{
@@ -59,7 +64,24 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		animatedBloodManager = BS_AnimatedBloodManager.GetInstance();
 		if (!animatedBloodManager)
 			animatedBloodManager = BS_AnimatedBloodManager.Cast(GetGame().SpawnEntity(BS_AnimatedBloodManager, GetGame().GetWorld(), null));
+
+
 	}
+	
+	
+	override void OnLifeStateChanged(ECharacterLifeState previousLifeState, ECharacterLifeState newLifeState)
+	{
+		super.OnLifeStateChanged(previousLifeState, newLifeState);
+		
+		if (newLifeState != ECharacterLifeState.ALIVE)
+		{
+			
+			GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, m_lastHitPosition, m_lastHitDirection, m_lastHitNodeId);
+
+		}
+	
+	}
+
 
 	override void OnDamage(notnull BaseDamageContext damageContext)
 	{
@@ -125,15 +147,25 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 			Print("Current state: " + currentState);		// 3 is destroyed
 			Print("char is already destr? " + alreadyDestroyed);
+			
+			
+			// todo Save data to spawn blood pool when the character is dying/on the ground
+			
+			// Save current transform to var
+			m_lastHitPosition = damageContext.hitPosition;
+			m_lastHitDirection = damageContext.hitDirection;
+			m_lastHitNodeId = correctNodeId;
+			
 
 			// todo not 100% certain that this is gonna be "Destroyed" when the char is dying.
-			if (currentState == EDamageState.STATE3 || currentState == EDamageState.STATE3 && !alreadyDestroyed)
-			{
+			//if (currentState == EDamageState.STATE3 || currentState == EDamageState.STATE3 && !alreadyDestroyed)
+			//{
 
-				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
-				alreadyDestroyed = true; // only once
-			}
-			else if (damage > 20.0)
+			//	GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
+			//	alreadyDestroyed = true; // only once
+			//}
+			//else 
+			if (damage > 20.0)
 			{
 				animatedBloodManager.SpawnWallSplatter(currentCharacter, hitTransform[0], hitTransform[1]);
 			}

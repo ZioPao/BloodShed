@@ -1,4 +1,5 @@
 EffectDef {
+ Version 1
  Emitters {
   EmitterDef blood {
    ShapeType Point
@@ -26,7 +27,6 @@ EffectDef {
    AirResistance 1
    GravityMultiply 0.2
    GravityMultiplyRND 0.05
-   Restitution 0
    AnimOnce 1
    AnimFPS 15
    LifetimeByAnim 0
