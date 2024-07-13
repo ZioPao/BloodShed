@@ -355,7 +355,8 @@ class BS_AnimatedBloodManager : GenericEntity
 		// Check intersection and setup vectors
 		traceParam = GetSurfaceIntersection(character, GetGame().GetWorld(), hitPosition, Vector(0, -1, 0), distance, TraceFlags.WORLD | TraceFlags.ENTS, intersectionPosition);
 
-		// Get Bone Matrix. If it's false, it's because of explosions or stuff like that
+		// Get Bone Matrix. If it's false, it's because of explosions or stuff like GetID
+
 		if (character.GetBoneMatrix(nodeId, characterBoneMatrix))
 		{
 
@@ -411,7 +412,7 @@ class BS_AnimatedBloodManager : GenericEntity
 
 	void AnimateDecals()
 	{
-		Print("Animate Decal");
+		//Print("Animate Decal");
 
 		foreach (int index, DecalInformation dInfo : decalsSpawned)
 		{
@@ -669,8 +670,7 @@ class DecalBaseInfo
 	float rotation;
 	float currentAlphaMul;
 
-private
-	bool isTerrainOnly;
+private bool isTerrainOnly;
 
 	void DecalBaseInfo(Decal p_decal, EDecalType p_type, int p_currentFrame, float p_size, int p_rotation, int p_currentAlphaMul)
 	{

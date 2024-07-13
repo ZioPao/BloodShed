@@ -123,11 +123,11 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 			EDamageState currentState = GetState();
 
-			Print("Current state: " + currentState);
+			Print("Current state: " + currentState);		// 3 is destroyed
 			Print("char is already destr? " + alreadyDestroyed);
 
 			// todo not 100% certain that this is gonna be "Destroyed" when the char is dying.
-			if (currentState == EDamageState.DESTROYED && !alreadyDestroyed)
+			if (currentState == EDamageState.STATE3 || currentState == EDamageState.STATE3 && !alreadyDestroyed)
 			{
 
 				GetGame().GetCallqueue().CallLater(animatedBloodManager.SpawnGroundBloodpool, 2000, false, currentCharacter, hitTransform[0], hitTransform[1], correctNodeId);
@@ -154,7 +154,7 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 	//------------------------------------------------------------------------------------------------
 
-	override void CreateBleedingParticleEffect(notnull HitZone hitZone, float bleedingRate, int colliderDescriptorIndex)
+	override void CreateBleedingParticleEffect(notnull HitZone hitZone, int colliderDescriptorIndex)
 	{
 		// Play Bleeding particle
 		if (m_sBleedingParticle.IsEmpty())
@@ -162,8 +162,8 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 
 		RemoveBleedingParticleEffect(hitZone);
 
-		if (bleedingRate == 0 || m_fBleedingParticleRateScale == 0)
-			return;
+		//if (bleedingRate == 0 || m_fBleedingParticleRateScale == 0)
+		//	return;
 
 		// TODO: Blood traces on ground that should be left regardless of clothing, perhaps just delayed
 		SCR_CharacterHitZone characterHitZone = SCR_CharacterHitZone.Cast(hitZone);
@@ -189,9 +189,9 @@ modded class SCR_CharacterDamageManagerComponent : ScriptedDamageManagerComponen
 		// m_mBleedingParticles.Insert(hitZone, particleEmitter);
 	}
 
-	override void RemoveBleedingHitZone(notnull HitZone hitZone)
+	override void RemoveBleedingFromArray(notnull HitZone hitZone)
 	{
-		super.RemoveBleedingHitZone(hitZone);
+		super.RemoveBleedingFromArray(hitZone);
 
 		// DisableBloodTrail();
 
